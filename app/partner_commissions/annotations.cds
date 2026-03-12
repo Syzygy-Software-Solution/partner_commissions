@@ -1,0 +1,1 @@
+using PartnerCommissionsService as service from '../../srv/partner_commissions-service';
