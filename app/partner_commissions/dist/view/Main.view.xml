@@ -1,6 +1,241 @@
 <mvc:View controllerName="partnercommissions.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
-    </Page>
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:u="sap.ui.unified">
+
+    <tnt:ToolPage id="toolPage">
+
+        <tnt:header>
+            <tnt:ToolHeader id="toolHeader">
+                <Button id="sideNavToggleBtn" icon="sap-icon://menu2" press="onToggleSideNav" type="Transparent" />
+                <Title id="appTitleHeader" text="{i18n>appTitle}" level="H4" />
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <tnt:sideContent>
+            <tnt:SideNavigation id="sideNav" selectedKey="partnerOnboarding" itemSelect="onSideNavItemSelect">
+                <tnt:NavigationList id="mainNavList">
+                    <tnt:NavigationListItem id="navItemDashboard" text="{i18n>navDashboard}" icon="sap-icon://home" key="dashboard" />
+                    <tnt:NavigationListItem id="navItemPartnerOnboarding" text="{i18n>navPartnerOnboarding}" icon="sap-icon://add-employee" key="partnerOnboarding" />
+                    <tnt:NavigationListItem id="navItemIncentiveProgram" text="{i18n>navIncentiveProgramSetup}" icon="sap-icon://competitor" key="incentiveProgramSetup" />
+                    <tnt:NavigationListItem id="navItemRiskScreening" text="{i18n>navRiskScreening}" icon="sap-icon://alert" key="riskScreening" />
+                    <tnt:NavigationListItem id="navItemPaymentSchedule" text="{i18n>navPaymentScheduleSetup}" icon="sap-icon://date-time" key="paymentScheduleSetup" />
+                    <tnt:NavigationListItem id="navItemPartnerHierarchy" text="{i18n>navPartnerHierarchySetup}" icon="sap-icon://org-chart" key="partnerHierarchySetup" />
+                    <tnt:NavigationListItem id="navItemDealRegistration" text="{i18n>navDealRegistration}" icon="sap-icon://sales-document" key="dealRegistration" />
+                    <tnt:NavigationListItem id="navItemPaymentApproval" text="{i18n>navPaymentApproval}" icon="sap-icon://accept" key="paymentApproval" />
+                </tnt:NavigationList>
+                <tnt:fixedItem>
+                    <tnt:NavigationList id="fixedNavList">
+                        <tnt:NavigationListItem id="navItemConfigurations" text="{i18n>navConfigurations}" icon="sap-icon://wrench" key="configurations" />
+                        <tnt:NavigationListItem id="navItemSettings" text="{i18n>navSettings}" icon="sap-icon://action-settings" key="settings" />
+                    </tnt:NavigationList>
+                </tnt:fixedItem>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+
+        <tnt:mainContents>
+            <NavContainer id="mainContent">
+
+                <!-- Partner Onboarding Page -->
+                <Page id="partnerOnboardingPage" title="{i18n>partnerOnboardingTitle}">
+                    <content>
+                        <IconTabBar id="onboardingTabBar" selectedKey="singleOnboarding" expandable="false" stretchContentHeight="true">
+                            <items>
+                                <!-- Single Partner Registration Tab -->
+                                <IconTabFilter id="tabSingleOnboarding" text="{i18n>tabPartnerRegistration}" key="singleOnboarding" icon="sap-icon://person-placeholder">
+                                    <ScrollContainer id="formScrollContainer" height="100%" vertical="true" horizontal="false">
+                                        <VBox id="formOuterVBox" class="sapUiSmallMargin">
+                                            <Panel id="panelRegistration" headerText="{i18n>panelPartnerRegistration}">
+                                                <f:SimpleForm id="partnerForm"
+                                                    editable="true"
+                                                    layout="ResponsiveGridLayout"
+                                                    labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                                                    emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                                                    columnsXL="1" columnsL="1" columnsM="1">
+
+                                                    <Label id="lblPartnerType" text="{i18n>lblPartnerType}" required="true" />
+                                                    <ComboBox id="cbPartnerType" placeholder="{i18n>phPartnerType}" width="100%">
+                                                        <items>
+                                                            <core:Item id="itemReseller" key="reseller" text="{i18n>partnerTypeReseller}" />
+                                                            <core:Item id="itemReferral" key="referral" text="{i18n>partnerTypeReferral}" />
+                                                            <core:Item id="itemDistributor" key="distributor" text="{i18n>partnerTypeDistributor}" />
+                                                        </items>
+                                                    </ComboBox>
+
+                                                    <Label id="lblPartnerName" text="{i18n>lblPartnerName}" required="true" />
+                                                    <Input id="inpPartnerName" placeholder="{i18n>phPartnerName}" width="100%" />
+
+                                                    <Label id="lblCompanyRegNumber" text="{i18n>lblCompanyRegNumber}" />
+                                                    <Input id="inpCompanyRegNumber" placeholder="{i18n>phCompanyRegNumber}" width="100%" />
+
+                                                    <Label id="lblTaxId" text="{i18n>lblTaxId}" />
+                                                    <Input id="inpTaxId" placeholder="{i18n>phTaxId}" width="100%" />
+
+                                                    <Label id="lblCountry" text="{i18n>lblCountry}" required="true" />
+                                                    <ComboBox id="cbCountry" placeholder="{i18n>phCountry}" width="100%">
+                                                    </ComboBox>
+
+                                                    <Label id="lblAddress" text="{i18n>lblAddress}" />
+                                                    <Input id="inpAddress" placeholder="{i18n>phAddress}" width="100%" />
+
+                                                    <Label id="lblIndustry" text="{i18n>lblIndustry}" />
+                                                    <ComboBox id="cbIndustry" placeholder="{i18n>phIndustry}" width="100%">
+                                                    </ComboBox>
+
+                                                    <Label id="lblYearsInBusiness" text="{i18n>lblYearsInBusiness}" />
+                                                    <HBox id="hboxBusinessDate">
+                                                        <ComboBox id="cbYearsInBusinessMonth" placeholder="{i18n>phMonth}" width="30%">
+                                                            <items>
+                                                                <core:Item id="itemJan" key="01" text="January" />
+                                                                <core:Item id="itemFeb" key="02" text="February" />
+                                                                <core:Item id="itemMar" key="03" text="March" />
+                                                                <core:Item id="itemApr" key="04" text="April" />
+                                                                <core:Item id="itemMay" key="05" text="May" />
+                                                                <core:Item id="itemJun" key="06" text="June" />
+                                                                <core:Item id="itemJul" key="07" text="July" />
+                                                                <core:Item id="itemAug" key="08" text="August" />
+                                                                <core:Item id="itemSep" key="09" text="September" />
+                                                                <core:Item id="itemOct" key="10" text="October" />
+                                                                <core:Item id="itemNov" key="11" text="November" />
+                                                                <core:Item id="itemDec" key="12" text="December" />
+                                                            </items>
+                                                        </ComboBox>
+                                                        <ComboBox id="cbYearsInBusinessDay" placeholder="{i18n>phDay}" width="20%">
+                                                        </ComboBox>
+                                                        <ComboBox id="cbYearsInBusinessYear" placeholder="{i18n>phYear}" width="30%">
+                                                        </ComboBox>
+                                                    </HBox>
+
+                                                    <Label id="lblAnnualRevenue" text="{i18n>lblAnnualRevenue}" />
+                                                    <Input id="inpAnnualRevenue" placeholder="{i18n>phAnnualRevenue}" type="Number" width="100%" />
+
+                                                    <Label id="lblNumberOfEmployees" text="{i18n>lblNumberOfEmployees}" />
+                                                    <Input id="inpNumberOfEmployees" placeholder="{i18n>phNumberOfEmployees}" type="Number" width="100%" />
+
+                                                </f:SimpleForm>
+                                            </Panel>
+
+                                            <OverflowToolbar id="formToolbar">
+                                                <ToolbarSpacer id="formToolbarSpacer" />
+                                                <Button id="btnClearForm" text="{i18n>btnClear}" press="onClearForm" type="Default" />
+                                                <!-- <Button id="btnSaveDraft" text="{i18n>btnSaveDraft}" press="onSaveDraft" type="Default" /> -->
+                                                <Button id="btnSubmitRiskScreening" text="{i18n>btnSubmit}" press="onSubmitRiskScreening" type="Emphasized" />
+                                            </OverflowToolbar>
+                                        </VBox>
+                                    </ScrollContainer>
+                                </IconTabFilter>
+
+                                <!-- Bulk Onboarding Tab -->
+                                <IconTabFilter id="tabBulkOnboarding" text="{i18n>tabBulkOnboarding}" key="bulkOnboarding" icon="sap-icon://upload-to-cloud">
+                                    <VBox id="bulkOuterVBox" class="sapUiSmallMargin" alignItems="Start">
+                                        <Panel id="panelBulkOnboarding" headerText="{i18n>panelBulkOnboarding}">
+                                            <VBox id="bulkInnerVBox" class="sapUiSmallMargin">
+                                                <Text id="bulkDescription" text="{i18n>bulkOnboardingDescription}" class="sapUiSmallMarginBottom" />
+                                                <HBox id="hboxBulkButtons" class="sapUiSmallMarginTop">
+                                                    <Button id="btnDownloadTemplate" text="{i18n>btnDownloadTemplate}" icon="sap-icon://download" press="onDownloadTemplate" type="Default" class="sapUiSmallMarginEnd" />
+                                                    <u:FileUploader id="fileUploaderExcel" name="excelUpload" placeholder="{i18n>phUploadExcel}" fileType="xlsx,xls" change="onExcelFileChange" style="Emphasized" buttonText="{i18n>btnUploadExcel}" />
+                                                </HBox>
+                                            </VBox>
+                                        </Panel>
+                                    </VBox>
+                                </IconTabFilter>
+                            </items>
+                        </IconTabBar>
+                    </content>
+                </Page>
+
+                <!-- Placeholder pages for other sections -->
+                <Page id="dashboardPage" title="{i18n>navDashboard}">
+                    <IllustratedMessage id="dashboardIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>dashboardComingSoonDesc}" />
+                </Page>
+                <Page id="incentiveProgramSetupPage" title="{i18n>incentiveProgramTitle}">
+                    <content>
+                        <ScrollContainer id="incentiveScrollContainer" height="100%" vertical="true" horizontal="false">
+                            <VBox id="incentiveOuterVBox" class="sapUiSmallMargin">
+                                <Panel id="panelIncentiveSetup" headerText="{i18n>panelIncentiveSetup}">
+                                    <f:SimpleForm id="incentiveForm"
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                                        emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                                        columnsXL="1" columnsL="1" columnsM="1">
+
+                                        <Label id="lblProgramName" text="{i18n>lblProgramName}" required="true" />
+                                        <Input id="inpProgramName" placeholder="{i18n>phProgramName}" width="100%" />
+
+                                        <Label id="lblIncentiveType" text="{i18n>lblIncentiveType}" required="true" />
+                                        <SegmentedButton id="sbIncentiveType" selectedKey="spiff">
+                                            <items>
+                                                <SegmentedButtonItem id="sbItemSpiff" key="spiff" text="{i18n>incentiveTypeSPIFF}" icon="sap-icon://trend-up" />
+                                                <SegmentedButtonItem id="sbItemReferral" key="referral" text="{i18n>incentiveTypeReferral}" icon="sap-icon://share" />
+                                                <SegmentedButtonItem id="sbItemRebate" key="rebate" text="{i18n>incentiveTypeRebate}" icon="sap-icon://money-bills" />
+                                                <SegmentedButtonItem id="sbItemMDF" key="mdf" text="{i18n>incentiveTypeMDF}" icon="sap-icon://budget-payments" />
+                                            </items>
+                                        </SegmentedButton>
+
+                                        <Label id="lblEligibleTiers" text="{i18n>lblEligibleTiers}" />
+                                        <HBox id="hboxEligibleTiers">
+                                            <CheckBox id="chkSilver" text="{i18n>tierSilver}" />
+                                            <CheckBox id="chkGold" text="{i18n>tierGold}" class="sapUiSmallMarginBegin" />
+                                        </HBox>
+
+                                        <Label id="lblStartDate" text="{i18n>lblStartDate}" required="true" />
+                                        <HBox id="hboxDateRange">
+                                            <DatePicker id="dpStartDate" placeholder="{i18n>phStartDate}" width="48%" />
+                                            <DatePicker id="dpEndDate" placeholder="{i18n>phEndDate}" width="48%" class="sapUiSmallMarginBegin" />
+                                        </HBox>
+
+                                        <Label id="lblDealStage" text="{i18n>lblDealStage}" />
+                                        <ComboBox id="cbDealStage" placeholder="{i18n>phDealStage}" width="100%">
+                                            <items>
+                                                <core:Item id="itemCloseDate" key="closeDate" text="{i18n>dealStageCloseDate}" />
+                                            </items>
+                                        </ComboBox>
+
+                                        <Label id="lblAttachDocuments" text="{i18n>lblAttachDocuments}" />
+                                        <u:FileUploader id="fileUploaderIncentive" name="incentiveDocUpload" placeholder="{i18n>phAttachDocuments}" change="onIncentiveFileChange" style="Emphasized" buttonText="{i18n>btnUploadFiles}" />
+
+                                    </f:SimpleForm>
+                                </Panel>
+
+                                <OverflowToolbar id="incentiveFormToolbar">
+                                    <ToolbarSpacer id="incentiveToolbarSpacer" />
+                                    <Button id="btnClearIncentiveForm" text="{i18n>btnClear}" press="onClearIncentiveForm" type="Default" />
+                                    <Button id="btnSubmitIncentive" text="{i18n>btnSubmit}" press="onSubmitIncentive" type="Emphasized" />
+                                </OverflowToolbar>
+                            </VBox>
+                        </ScrollContainer>
+                    </content>
+                </Page>
+                <Page id="riskScreeningPage" title="{i18n>navRiskScreening}">
+                    <IllustratedMessage id="riskScreeningIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>riskScreeningComingSoonDesc}" />
+                </Page>
+                <Page id="paymentScheduleSetupPage" title="{i18n>navPaymentScheduleSetup}">
+                    <IllustratedMessage id="paymentScheduleIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>paymentScheduleComingSoonDesc}" />
+                </Page>
+                <Page id="partnerHierarchySetupPage" title="{i18n>navPartnerHierarchySetup}">
+                    <IllustratedMessage id="hierarchyIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>hierarchyComingSoonDesc}" />
+                </Page>
+                <Page id="dealRegistrationPage" title="{i18n>navDealRegistration}">
+                    <IllustratedMessage id="dealRegIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>dealRegComingSoonDesc}" />
+                </Page>
+                <Page id="paymentApprovalPage" title="{i18n>navPaymentApproval}">
+                    <IllustratedMessage id="paymentApprovalIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>paymentApprovalComingSoonDesc}" />
+                </Page>
+                <Page id="configurationsPage" title="{i18n>navConfigurations}">
+                    <IllustratedMessage id="configurationsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>configurationsComingSoonDesc}" />
+                </Page>
+                <Page id="settingsPage" title="{i18n>navSettings}">
+                    <IllustratedMessage id="settingsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>settingsComingSoonDesc}" />
+                </Page>
+
+            </NavContainer>
+        </tnt:mainContents>
+
+    </tnt:ToolPage>
+
 </mvc:View>
