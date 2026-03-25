@@ -28,10 +28,14 @@ sap.ui.define([
 
         onInit() {
             this._populateDayComboBox();
-            this._loadPlanNames();
-            this._loadIncentiveTypes();
 
             this.getView().setModel(new JSONModel([]), "incentiveTypes");
+            this.getView().setModel(new JSONModel([]), "incentivePrograms");
+            this.getView().setModel(new JSONModel([]), "planNames");
+            this.getView().setModel(new JSONModel([]), "activeIncentiveTypes");
+
+            this._loadPlanNames();
+            this._loadIncentiveTypes();
 
             // Navigate to Partner Onboarding by default
             var oNavContainer = this.byId("mainContent");
@@ -179,12 +183,12 @@ sap.ui.define([
                     });
                     aUniqueNames.sort();
 
-                    var oCbPlanName = that.byId("cbPlanName");
-                    aUniqueNames.forEach(function (sName) {
-                        oCbPlanName.addItem(new Item({ key: sName, text: sName }));
+                    var aItems = aUniqueNames.map(function (sName) {
+                        return { key: sName, text: sName };
                     });
+                    that.getView().getModel("planNames").setData(aItems);
                 })
-                .catch(function (oError) {
+                .catch(function () {
                     MessageToast.show("Unable to load plan names.");
                 });
         },
@@ -193,15 +197,6 @@ sap.ui.define([
          * Clear Incentive Program Setup form
          */
         onClearIncentiveForm() {
-            this.byId("cbPlanName").setSelectedKey("");
-            this.byId("mcbIncentiveType").setSelectedKeys([]);
-            this.byId("chkSilver").setSelected(false);
-            this.byId("chkGold").setSelected(false);
-            this.byId("dpStartDate").setValue("");
-            this.byId("dpEndDate").setValue("");
-            this.byId("cbDealStage").setSelectedKey("");
-            this.byId("fileUploaderIncentive").clear();
-
             MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("msgIncentiveFormCleared"));
         },
 
@@ -210,6 +205,58 @@ sap.ui.define([
          */
         onSubmitIncentive() {
             MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("msgIncentiveSubmitted"));
+        },
+
+        // ========== Incentive Program Table ==========
+
+        /**
+         * Update the Programs table title with current count
+         */
+        _updateIncentiveProgramCount() {
+            var iCount = this.getView().getModel("incentivePrograms").getData().length;
+            this.byId("incentiveTableTitle").setText("Programs (" + iCount + ")");
+        },
+
+        /**
+         * Add a new row to the incentive programs table
+         */
+        onAddIncentiveRow() {
+            var oModel = this.getView().getModel("incentivePrograms");
+            var aData = oModel.getData();
+            aData.push({
+                planName: "",
+                incentiveTypes: [],
+                eligibleTier: "",
+                startDate: "",
+                endDate: "",
+                dealStage: "",
+                fileName: ""
+            });
+            oModel.setData(aData);
+            this._updateIncentiveProgramCount();
+        },
+
+        /**
+         * Delete a row from the incentive programs table
+         */
+        onDeleteIncentiveRow(oEvent) {
+            var oButton = oEvent.getSource();
+            var oContext = oButton.getBindingContext("incentivePrograms");
+            var sPath = oContext.getPath();
+            var iIndex = parseInt(sPath.substring(1), 10);
+
+            var oModel = this.getView().getModel("incentivePrograms");
+            var aData = oModel.getData();
+            aData.splice(iIndex, 1);
+            oModel.setData(aData);
+            this._updateIncentiveProgramCount();
+        },
+
+        /**
+         * Save incentive programs (placeholder)
+         */
+        onSaveIncentivePrograms() {
+            MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("msgIncentiveProgramsSaved"));
         },
 
         /**
@@ -369,14 +416,10 @@ sap.ui.define([
                 })
                 .then(function (oData) {
                     var aRecords = oData.value || [];
-                    var oMcb = that.byId("mcbIncentiveType");
-                    oMcb.removeAllItems();
-                    aRecords.forEach(function (oRecord) {
-                        oMcb.addItem(new Item({
-                            key: oRecord.incentiveType,
-                            text: oRecord.incentiveType
-                        }));
+                    var aItems = aRecords.map(function (oRecord) {
+                        return { key: oRecord.incentiveType, text: oRecord.incentiveType };
                     });
+                    that.getView().getModel("activeIncentiveTypes").setData(aItems);
                 })
                 .catch(function () {
                     // silently ignore if no incentive types configured yet
