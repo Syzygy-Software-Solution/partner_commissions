@@ -22,15 +22,19 @@
                     <tnt:NavigationListItem id="navItemDashboard" text="{i18n>navDashboard}" icon="sap-icon://home" key="dashboard" />
                     <tnt:NavigationListItem id="navItemPartnerOnboarding" text="{i18n>navPartnerOnboarding}" icon="sap-icon://add-employee" key="partnerOnboarding" />
                     <tnt:NavigationListItem id="navItemIncentiveProgram" text="{i18n>navIncentiveProgramSetup}" icon="sap-icon://competitor" key="incentiveProgramSetup" />
+                    <tnt:NavigationListItem id="navItemPartnerMappings" text="{i18n>navPartnerMappings}" icon="sap-icon://collaborate" key="partnerMappings" />
+                    <tnt:NavigationListItem id="navItemPartnerHierarchy" text="{i18n>navPartnerHierarchySetup}" icon="sap-icon://org-chart" key="partnerHierarchySetup" />
                     <tnt:NavigationListItem id="navItemRiskScreening" text="{i18n>navRiskScreening}" icon="sap-icon://alert" key="riskScreening" />
                     <tnt:NavigationListItem id="navItemPaymentSchedule" text="{i18n>navPaymentScheduleSetup}" icon="sap-icon://date-time" key="paymentScheduleSetup" />
-                    <tnt:NavigationListItem id="navItemPartnerHierarchy" text="{i18n>navPartnerHierarchySetup}" icon="sap-icon://org-chart" key="partnerHierarchySetup" />
                     <tnt:NavigationListItem id="navItemDealRegistration" text="{i18n>navDealRegistration}" icon="sap-icon://sales-document" key="dealRegistration" />
                     <tnt:NavigationListItem id="navItemPaymentApproval" text="{i18n>navPaymentApproval}" icon="sap-icon://accept" key="paymentApproval" />
                 </tnt:NavigationList>
                 <tnt:fixedItem>
                     <tnt:NavigationList id="fixedNavList">
-                        <tnt:NavigationListItem id="navItemConfigurations" text="{i18n>navConfigurations}" icon="sap-icon://wrench" key="configurations" />
+                        <tnt:NavigationListItem id="navItemConfigurations" text="{i18n>navConfigurations}" icon="sap-icon://wrench" expanded="false">
+                            <tnt:NavigationListItem id="navItemConfigDataSources" text="{i18n>navDataSources}" icon="sap-icon://database" key="configDataSources" />
+                            <tnt:NavigationListItem id="navItemConfigCustomizations" text="{i18n>navCustomizations}" icon="sap-icon://customize" key="configCustomizations" />
+                        </tnt:NavigationListItem>
                         <tnt:NavigationListItem id="navItemSettings" text="{i18n>navSettings}" icon="sap-icon://action-settings" key="settings" />
                     </tnt:NavigationList>
                 </tnt:fixedItem>
@@ -165,17 +169,10 @@
                                         columnsXL="1" columnsL="1" columnsM="1">
 
                                         <Label id="lblProgramName" text="{i18n>lblProgramName}" required="true" />
-                                        <Input id="inpProgramName" placeholder="{i18n>phProgramName}" width="100%" />
+                                        <ComboBox id="cbPlanName" placeholder="{i18n>phProgramName}" width="100%" />
 
                                         <Label id="lblIncentiveType" text="{i18n>lblIncentiveType}" required="true" />
-                                        <SegmentedButton id="sbIncentiveType" selectedKey="spiff">
-                                            <items>
-                                                <SegmentedButtonItem id="sbItemSpiff" key="spiff" text="{i18n>incentiveTypeSPIFF}" icon="sap-icon://trend-up" />
-                                                <SegmentedButtonItem id="sbItemReferral" key="referral" text="{i18n>incentiveTypeReferral}" icon="sap-icon://share" />
-                                                <SegmentedButtonItem id="sbItemRebate" key="rebate" text="{i18n>incentiveTypeRebate}" icon="sap-icon://money-bills" />
-                                                <SegmentedButtonItem id="sbItemMDF" key="mdf" text="{i18n>incentiveTypeMDF}" icon="sap-icon://budget-payments" />
-                                            </items>
-                                        </SegmentedButton>
+                                        <MultiComboBox id="mcbIncentiveType" placeholder="{i18n>phIncentiveType}" width="100%" />
 
                                         <Label id="lblEligibleTiers" text="{i18n>lblEligibleTiers}" />
                                         <HBox id="hboxEligibleTiers">
@@ -226,8 +223,81 @@
                 <Page id="paymentApprovalPage" title="{i18n>navPaymentApproval}">
                     <IllustratedMessage id="paymentApprovalIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>paymentApprovalComingSoonDesc}" />
                 </Page>
-                <Page id="configurationsPage" title="{i18n>navConfigurations}">
-                    <IllustratedMessage id="configurationsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>configurationsComingSoonDesc}" />
+                <Page id="partnerMappingsPage" title="{i18n>navPartnerMappings}">
+                    <IllustratedMessage id="partnerMappingsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>partnerMappingsComingSoonDesc}" />
+                </Page>
+                <Page id="configDataSourcesPage" showHeader="false">
+                    <content>
+                        <VBox id="configDataSourcesHeaderVBox">
+                            <HBox id="configDataSourcesHeaderHBox" class="sapUiSmallMargin" alignItems="Center">
+                                <core:Icon id="configDataSourcesIcon" src="sap-icon://database" size="2rem" class="sapUiSmallMarginEnd" />
+                                <Title id="configDataSourcesTitle" text="{i18n>navDataSources}" level="H2" />
+                            </HBox>
+                            <Text id="configDataSourcesDesc" text="{i18n>dataSourcesDescription}" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" />
+                        </VBox>
+                        <SplitContainer id="configSplitContainer">
+                            <masterPages>
+                                <Page id="configMasterPage" title="{i18n>lblRepository}" showNavButton="false">
+                                    <content>
+                                        <List id="configDataSourceList" mode="SingleSelectMaster" selectionChange="onConfigDataSourceSelect">
+                                            <items>
+                                                <StandardListItem id="configListItemIncentiveTypes" title="{i18n>lblIncentiveTypes}" icon="sap-icon://list" type="Active">
+                                                    <customData>
+                                                        <core:CustomData id="configListItemIncentiveTypesKey" key="key" value="incentiveTypes" />
+                                                    </customData>
+                                                </StandardListItem>
+                                            </items>
+                                        </List>
+                                    </content>
+                                </Page>
+                            </masterPages>
+                            <detailPages>
+                                <Page id="configDetailEmptyPage" showHeader="false">
+                                    <IllustratedMessage id="configDetailEmptyIllustration" illustrationType="sapIllus-SimpleNotFoundMagnifier" title="{i18n>selectDataSource}" description="{i18n>selectDataSourceDesc}" />
+                                </Page>
+                                <Page id="configIncentiveTypesPage" title="{i18n>lblIncentiveTypes}">
+                                    <headerContent>
+                                        <OverflowToolbar id="incentiveTypesToolbar">
+                                            <ToolbarSpacer id="incentiveTypesToolbarSpacer" />
+                                            <Button id="btnAddIncentiveType" text="{i18n>btnAdd}" icon="sap-icon://add" press="onAddIncentiveTypeRow" type="Transparent" />
+                                            <Button id="btnSaveIncentiveTypes" text="{i18n>btnSave}" icon="sap-icon://save" press="onSaveIncentiveTypes" type="Success" />
+                                        </OverflowToolbar>
+                                    </headerContent>
+                                    <content>
+                                        <Table id="tblIncentiveTypes" items="{incentiveTypes>/}" growing="true" growingThreshold="50">
+                                            <columns>
+                                                <Column id="colSno" width="80px">
+                                                    <Text id="colSnoHeader" text="{i18n>colSno}" />
+                                                </Column>
+                                                <Column id="colIncentiveType">
+                                                    <Text id="colIncentiveTypeHeader" text="{i18n>colIncentiveType}" />
+                                                </Column>
+                                                <Column id="colActive" width="120px" hAlign="Center">
+                                                    <Text id="colActiveHeader" text="{i18n>colActive}" />
+                                                </Column>
+                                                <Column id="colDelete" width="80px" hAlign="Center">
+                                                    <Text id="colDeleteHeader" text="" />
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="rowIncentiveType">
+                                                    <cells>
+                                                        <Text id="cellSno" text="{incentiveTypes>sno}" />
+                                                        <Input id="cellIncentiveType" value="{incentiveTypes>incentiveType}" placeholder="{i18n>phEnterIncentiveType}" />
+                                                        <Switch id="cellActive" state="{incentiveTypes>active}" type="AcceptReject" />
+                                                        <Button id="cellDelete" icon="sap-icon://delete" type="Transparent" press="onDeleteIncentiveTypeRow" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Page>
+                            </detailPages>
+                        </SplitContainer>
+                    </content>
+                </Page>
+                <Page id="configCustomizationsPage" title="{i18n>navCustomizations}">
+                    <IllustratedMessage id="customizationsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>customizationsComingSoonDesc}" />
                 </Page>
                 <Page id="settingsPage" title="{i18n>navSettings}">
                     <IllustratedMessage id="settingsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>settingsComingSoonDesc}" />

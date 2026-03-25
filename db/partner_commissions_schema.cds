@@ -1,6 +1,11 @@
 namespace sz;
 using { cuid, managed } from '@sap/cds/common';
 
+entity IncentiveTypes: cuid, managed {
+    incentiveType : String;
+    active        : Boolean;
+}
+
 entity PayeeMapping: cuid, managed{
     participantSeq: String;	
     participantId : String;	

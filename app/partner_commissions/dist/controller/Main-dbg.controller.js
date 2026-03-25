@@ -1,8 +1,9 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/m/MessageToast",
-    "sap/ui/core/Item"
-], (Controller, MessageToast, Item) => {
+    "sap/ui/core/Item",
+    "sap/ui/model/json/JSONModel"
+], (Controller, MessageToast, Item, JSONModel) => {
     "use strict";
 
     return Controller.extend("partnercommissions.controller.Main", {
@@ -17,14 +18,20 @@ sap.ui.define([
             riskScreening: "riskScreeningPage",
             paymentScheduleSetup: "paymentScheduleSetupPage",
             partnerHierarchySetup: "partnerHierarchySetupPage",
+            partnerMappings: "partnerMappingsPage",
             dealRegistration: "dealRegistrationPage",
             paymentApproval: "paymentApprovalPage",
-            configurations: "configurationsPage",
+            configDataSources: "configDataSourcesPage",
+            configCustomizations: "configCustomizationsPage",
             settings: "settingsPage"
         },
 
         onInit() {
             this._populateDayComboBox();
+            this._loadPlanNames();
+            this._loadIncentiveTypes();
+
+            this.getView().setModel(new JSONModel([]), "incentiveTypes");
 
             // Navigate to Partner Onboarding by default
             var oNavContainer = this.byId("mainContent");
@@ -144,11 +151,50 @@ sap.ui.define([
         },
 
         /**
+         * Fetch plan names from TCMP destination and populate the Plan Name combo box
+         */
+        _loadPlanNames() {
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/V_CS_PLAN/V_CS_PLAN";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch plan names");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var aUniqueNames = [];
+                    var oSeen = {};
+                    aRecords.forEach(function (oRecord) {
+                        if (oRecord.NAME && !oSeen[oRecord.NAME]) {
+                            oSeen[oRecord.NAME] = true;
+                            aUniqueNames.push(oRecord.NAME);
+                        }
+                    });
+                    aUniqueNames.sort();
+
+                    var oCbPlanName = that.byId("cbPlanName");
+                    aUniqueNames.forEach(function (sName) {
+                        oCbPlanName.addItem(new Item({ key: sName, text: sName }));
+                    });
+                })
+                .catch(function (oError) {
+                    MessageToast.show("Unable to load plan names.");
+                });
+        },
+
+        /**
          * Clear Incentive Program Setup form
          */
         onClearIncentiveForm() {
-            this.byId("inpProgramName").setValue("");
-            this.byId("sbIncentiveType").setSelectedKey("spiff");
+            this.byId("cbPlanName").setSelectedKey("");
+            this.byId("mcbIncentiveType").setSelectedKeys([]);
             this.byId("chkSilver").setSelected(false);
             this.byId("chkGold").setSelected(false);
             this.byId("dpStartDate").setValue("");
@@ -176,6 +222,165 @@ sap.ui.define([
                     this.getView().getModel("i18n").getResourceBundle().getText("msgIncentiveFileSelected", [sFileName])
                 );
             }
+        },
+
+        // ========== Configurations - Data Sources ==========
+
+        /**
+         * Get base URL for the main OData service
+         */
+        _getServiceBaseUrl() {
+            return this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.mainService.uri
+            );
+        },
+
+        /**
+         * Handle data source list selection in the SplitContainer
+         */
+        onConfigDataSourceSelect(oEvent) {
+            var oItem = oEvent.getParameter("listItem");
+            var sKey = oItem.data("key") || "incentiveTypes";
+            var oSplitContainer = this.byId("configSplitContainer");
+
+            if (sKey === "incentiveTypes") {
+                this._loadIncentiveTypesConfig();
+                oSplitContainer.toDetail(this.byId("configIncentiveTypesPage"));
+            }
+        },
+
+        /**
+         * Load incentive types from backend into the config table
+         */
+        _loadIncentiveTypesConfig() {
+            var sUrl = this._getServiceBaseUrl() + "IncentiveTypes";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch incentive types");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var aItems = aRecords.map(function (oRecord, iIndex) {
+                        return {
+                            sno: iIndex + 1,
+                            incentiveType: oRecord.incentiveType,
+                            active: oRecord.active
+                        };
+                    });
+                    that.getView().getModel("incentiveTypes").setData(aItems);
+                })
+                .catch(function () {
+                    that.getView().getModel("incentiveTypes").setData([]);
+                });
+        },
+
+        /**
+         * Add a new row to the incentive types table
+         */
+        onAddIncentiveTypeRow() {
+            var oModel = this.getView().getModel("incentiveTypes");
+            var aData = oModel.getData();
+            aData.push({
+                sno: aData.length + 1,
+                incentiveType: "",
+                active: true
+            });
+            oModel.setData(aData);
+        },
+
+        /**
+         * Delete a row from the incentive types table
+         */
+        onDeleteIncentiveTypeRow(oEvent) {
+            var oButton = oEvent.getSource();
+            var oContext = oButton.getBindingContext("incentiveTypes");
+            var sPath = oContext.getPath();
+            var iIndex = parseInt(sPath.substring(1), 10);
+
+            var oModel = this.getView().getModel("incentiveTypes");
+            var aData = oModel.getData();
+            aData.splice(iIndex, 1);
+
+            // Renumber
+            aData.forEach(function (oItem, i) {
+                oItem.sno = i + 1;
+            });
+            oModel.setData(aData);
+        },
+
+        /**
+         * Save incentive types to backend
+         */
+        onSaveIncentiveTypes() {
+            var oModel = this.getView().getModel("incentiveTypes");
+            var aData = oModel.getData();
+            var that = this;
+
+            var aItems = aData.filter(function (oItem) {
+                return oItem.incentiveType && oItem.incentiveType.trim() !== "";
+            }).map(function (oItem) {
+                return {
+                    incentiveType: oItem.incentiveType.trim(),
+                    active: oItem.active
+                };
+            });
+
+            var sUrl = this._getServiceBaseUrl() + "saveIncentiveTypes";
+
+            fetch(sUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ items: aItems })
+            })
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to save incentive types");
+                    }
+                    return oResponse.json();
+                })
+                .then(function () {
+                    MessageToast.show(that.getView().getModel("i18n").getResourceBundle().getText("msgIncentiveTypesSaved"));
+                    that._loadIncentiveTypesConfig();
+                    that._loadIncentiveTypes();
+                })
+                .catch(function () {
+                    MessageToast.show("Failed to save incentive types.");
+                });
+        },
+
+        /**
+         * Load active incentive types from backend and populate the MultiComboBox
+         */
+        _loadIncentiveTypes() {
+            var sUrl = this._getServiceBaseUrl() + "IncentiveTypes?$filter=active eq true";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch incentive types");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var oMcb = that.byId("mcbIncentiveType");
+                    oMcb.removeAllItems();
+                    aRecords.forEach(function (oRecord) {
+                        oMcb.addItem(new Item({
+                            key: oRecord.incentiveType,
+                            text: oRecord.incentiveType
+                        }));
+                    });
+                })
+                .catch(function () {
+                    // silently ignore if no incentive types configured yet
+                });
         }
     });
 });
