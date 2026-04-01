@@ -6,6 +6,29 @@ entity IncentiveTypes: cuid, managed {
     active        : Boolean;
 }
 
+entity EligibleTiers: cuid, managed {
+    partnerTier      : String;
+    revenueBand      : String;
+    region           : String;
+    tier             : String;
+    eligibilityFlag  : String;
+}
+
+entity FieldCustomizations: cuid, managed {
+    position     : Integer;
+    fieldId      : String;
+    columnName   : String;
+    defaultLabel : String;
+    customLabel  : String;
+    enabled      : Boolean;
+    fixed        : Boolean;
+}
+
+entity PartnerTypes: cuid, managed {
+    partnerType : String;
+    active      : Boolean;
+}
+
 entity PayeeMapping: cuid, managed{
     participantSeq: String;	
     participantId : String;	
@@ -15,7 +38,17 @@ entity PayeeMapping: cuid, managed{
     createDate: Date;	
     removeDate: Date;	
     partnerType : String;	
-    partnerName: String;	
+    partnerName: String;
+    companyRegNumber : String;
+    emailId : String;
+    country : String;
+    positionName : String;
+    salary : Decimal;
+    unitTypeForSalary : String;
+    hireDate : Date;
+    terminationDate : Date;
+    userName : String;
+    userId : String;
     genericAttribute1 : String;	
     genericAttribute2 : String;	
     genericAttribute3 : String;

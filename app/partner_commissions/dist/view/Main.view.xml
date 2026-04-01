@@ -22,7 +22,7 @@
                     <tnt:NavigationListItem id="navItemDashboard" text="{i18n>navDashboard}" icon="sap-icon://home" key="dashboard" />
                     <tnt:NavigationListItem id="navItemPartnerOnboarding" text="{i18n>navPartnerOnboarding}" icon="sap-icon://add-employee" key="partnerOnboarding" />
                     <tnt:NavigationListItem id="navItemIncentiveProgram" text="{i18n>navIncentiveProgramSetup}" icon="sap-icon://competitor" key="incentiveProgramSetup" />
-                    <tnt:NavigationListItem id="navItemPartnerMappings" text="{i18n>navPartnerMappings}" icon="sap-icon://collaborate" key="partnerMappings" />
+                    <tnt:NavigationListItem id="navItemPartnerAssignment" text="{i18n>navPartnerAssignment}" icon="sap-icon://collaborate" key="partnerAssignment" />
                     <tnt:NavigationListItem id="navItemPartnerHierarchy" text="{i18n>navPartnerHierarchySetup}" icon="sap-icon://org-chart" key="partnerHierarchySetup" />
                     <tnt:NavigationListItem id="navItemRiskScreening" text="{i18n>navRiskScreening}" icon="sap-icon://alert" key="riskScreening" />
                     <tnt:NavigationListItem id="navItemPaymentSchedule" text="{i18n>navPaymentScheduleSetup}" icon="sap-icon://date-time" key="paymentScheduleSetup" />
@@ -54,108 +54,25 @@
                             </HBox>
                             <Text id="partnerOnboardingDesc" text="{i18n>partnerOnboardingDescription}" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" />
                         </VBox>
-                        <IconTabBar id="onboardingTabBar" selectedKey="singleOnboarding" expandable="false">
-                            <items>
-                                <!-- Single Partner Registration Tab -->
-                                <IconTabFilter id="tabSingleOnboarding" text="{i18n>tabPartnerRegistration}" key="singleOnboarding" icon="sap-icon://person-placeholder">
-                                    <ScrollContainer id="formScrollContainer" vertical="true" horizontal="false">
-                                        <VBox id="formOuterVBox" class="sapUiSmallMargin">
-                                            <Panel id="panelRegistration" headerText="{i18n>panelPartnerRegistration}">
-                                                <f:SimpleForm id="partnerForm"
-                                                    editable="true"
-                                                    layout="ResponsiveGridLayout"
-                                                    labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
-                                                    emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
-                                                    columnsXL="1" columnsL="1" columnsM="1">
-
-                                                    <Label id="lblPartnerType" text="{i18n>lblPartnerType}" required="true" />
-                                                    <ComboBox id="cbPartnerType" placeholder="{i18n>phPartnerType}" width="100%">
-                                                        <items>
-                                                            <core:Item id="itemReseller" key="reseller" text="{i18n>partnerTypeReseller}" />
-                                                            <core:Item id="itemReferral" key="referral" text="{i18n>partnerTypeReferral}" />
-                                                            <core:Item id="itemDistributor" key="distributor" text="{i18n>partnerTypeDistributor}" />
-                                                        </items>
-                                                    </ComboBox>
-
-                                                    <Label id="lblPartnerName" text="{i18n>lblPartnerName}" required="true" />
-                                                    <Input id="inpPartnerName" placeholder="{i18n>phPartnerName}" width="100%" />
-
-                                                    <Label id="lblCompanyRegNumber" text="{i18n>lblCompanyRegNumber}" />
-                                                    <Input id="inpCompanyRegNumber" placeholder="{i18n>phCompanyRegNumber}" width="100%" />
-
-                                                    <Label id="lblTaxId" text="{i18n>lblTaxId}" />
-                                                    <Input id="inpTaxId" placeholder="{i18n>phTaxId}" width="100%" />
-
-                                                    <Label id="lblCountry" text="{i18n>lblCountry}" required="true" />
-                                                    <ComboBox id="cbCountry" placeholder="{i18n>phCountry}" width="100%">
-                                                    </ComboBox>
-
-                                                    <Label id="lblAddress" text="{i18n>lblAddress}" />
-                                                    <Input id="inpAddress" placeholder="{i18n>phAddress}" width="100%" />
-
-                                                    <Label id="lblIndustry" text="{i18n>lblIndustry}" />
-                                                    <ComboBox id="cbIndustry" placeholder="{i18n>phIndustry}" width="100%">
-                                                    </ComboBox>
-
-                                                    <Label id="lblYearsInBusiness" text="{i18n>lblYearsInBusiness}" />
-                                                    <HBox id="hboxBusinessDate">
-                                                        <ComboBox id="cbYearsInBusinessMonth" placeholder="{i18n>phMonth}" width="30%">
-                                                            <items>
-                                                                <core:Item id="itemJan" key="01" text="January" />
-                                                                <core:Item id="itemFeb" key="02" text="February" />
-                                                                <core:Item id="itemMar" key="03" text="March" />
-                                                                <core:Item id="itemApr" key="04" text="April" />
-                                                                <core:Item id="itemMay" key="05" text="May" />
-                                                                <core:Item id="itemJun" key="06" text="June" />
-                                                                <core:Item id="itemJul" key="07" text="July" />
-                                                                <core:Item id="itemAug" key="08" text="August" />
-                                                                <core:Item id="itemSep" key="09" text="September" />
-                                                                <core:Item id="itemOct" key="10" text="October" />
-                                                                <core:Item id="itemNov" key="11" text="November" />
-                                                                <core:Item id="itemDec" key="12" text="December" />
-                                                            </items>
-                                                        </ComboBox>
-                                                        <ComboBox id="cbYearsInBusinessDay" placeholder="{i18n>phDay}" width="20%">
-                                                        </ComboBox>
-                                                        <ComboBox id="cbYearsInBusinessYear" placeholder="{i18n>phYear}" width="30%">
-                                                        </ComboBox>
-                                                    </HBox>
-
-                                                    <Label id="lblAnnualRevenue" text="{i18n>lblAnnualRevenue}" />
-                                                    <Input id="inpAnnualRevenue" placeholder="{i18n>phAnnualRevenue}" type="Number" width="100%" />
-
-                                                    <Label id="lblNumberOfEmployees" text="{i18n>lblNumberOfEmployees}" />
-                                                    <Input id="inpNumberOfEmployees" placeholder="{i18n>phNumberOfEmployees}" type="Number" width="100%" />
-
-                                                </f:SimpleForm>
-                                            </Panel>
-
-                                            <OverflowToolbar id="formToolbar">
-                                                <ToolbarSpacer id="formToolbarSpacer" />
-                                                <Button id="btnClearForm" text="{i18n>btnClear}" press="onClearForm" type="Default" />
-                                                <!-- <Button id="btnSaveDraft" text="{i18n>btnSaveDraft}" press="onSaveDraft" type="Default" /> -->
-                                                <Button id="btnSubmitRiskScreening" text="{i18n>btnSubmit}" press="onSubmitRiskScreening" type="Emphasized" />
-                                            </OverflowToolbar>
-                                        </VBox>
-                                    </ScrollContainer>
-                                </IconTabFilter>
-
-                                <!-- Bulk Onboarding Tab -->
-                                <IconTabFilter id="tabBulkOnboarding" text="{i18n>tabBulkOnboarding}" key="bulkOnboarding" icon="sap-icon://upload-to-cloud">
-                                    <VBox id="bulkOuterVBox" class="sapUiSmallMargin" alignItems="Start">
-                                        <Panel id="panelBulkOnboarding" headerText="{i18n>panelBulkOnboarding}">
-                                            <VBox id="bulkInnerVBox" class="sapUiSmallMargin">
-                                                <Text id="bulkDescription" text="{i18n>bulkOnboardingDescription}" class="sapUiSmallMarginBottom" />
-                                                <HBox id="hboxBulkButtons" class="sapUiSmallMarginTop">
-                                                    <Button id="btnDownloadTemplate" text="{i18n>btnDownloadTemplate}" icon="sap-icon://download" press="onDownloadTemplate" type="Default" class="sapUiSmallMarginEnd" />
-                                                    <u:FileUploader id="fileUploaderExcel" name="excelUpload" placeholder="{i18n>phUploadExcel}" fileType="xlsx,xls" change="onExcelFileChange" style="Emphasized" buttonText="{i18n>btnUploadExcel}" />
-                                                </HBox>
-                                            </VBox>
-                                        </Panel>
-                                    </VBox>
-                                </IconTabFilter>
-                            </items>
-                        </IconTabBar>
+                        <OverflowToolbar id="partnerTableToolbar">
+                            <Title id="partnerTableTitle" text="Partners (0)" level="H5" />
+                            <ToolbarSpacer id="partnerTableToolbarSpacer" />
+                            <Button id="btnRegisterPartner" text="{i18n>btnRegisterNewPartner}" icon="sap-icon://add" press="onRegisterPartner" type="Emphasized" />
+                            <MenuButton id="btnBulkOnboarding" text="{i18n>btnBulkPartnerOnboarding}" type="Ghost" icon="sap-icon://upload-to-cloud">
+                                <menu>
+                                    <Menu id="bulkOnboardingMenu">
+                                        <MenuItem id="menuDownloadTemplate" text="{i18n>btnDownloadTemplate}" icon="sap-icon://download" press="onDownloadTemplate" />
+                                        <MenuItem id="menuUploadTemplate" text="{i18n>btnUploadTemplate}" icon="sap-icon://upload" press="onUploadTemplate" />
+                                    </Menu>
+                                </menu>
+                            </MenuButton>
+                            <Button id="btnColumnSettings" icon="sap-icon://action-settings" press="onOpenColumnSettings" type="Transparent" tooltip="{i18n>btnColumnSettings}" />
+                        </OverflowToolbar>
+                        <Table id="tblPartners" growing="true" growingThreshold="50">
+                            <noData>
+                                <IllustratedMessage id="partnersEmptyIllustration" illustrationType="sapIllus-AddColumn" title="{i18n>noPartnersTitle}" description="{i18n>noPartnersDesc}" />
+                            </noData>
+                        </Table>
                     </content>
                 </Page>
 
@@ -201,7 +118,7 @@
                                 <Column id="colIPDealStage" width="150px">
                                     <Text id="colIPDealStageHeader" text="{i18n>lblDealStage}" />
                                 </Column>
-                                <Column id="colIPAttach" width="120px" hAlign="Center">
+                                <Column id="colIPAttach" width="120px" hAlign="Center" visible="false">
                                     <Text id="colIPAttachHeader" text="{i18n>lblAttachDocuments}" />
                                 </Column>
                                 <Column id="colIPDelete" width="60px" hAlign="Center">
@@ -223,10 +140,10 @@
                                                 <core:Item id="cellIPIncentiveTypeItem" key="{activeIncentiveTypes>key}" text="{activeIncentiveTypes>text}" />
                                             </items>
                                         </MultiComboBox>
-                                        <ComboBox id="cellIPEligibleTier" selectedKey="{incentivePrograms>eligibleTier}" placeholder="{i18n>lblEligibleTiers}" width="100%">
+                                        <ComboBox id="cellIPEligibleTier" selectedKey="{incentivePrograms>eligibleTier}" placeholder="{i18n>lblEligibleTiers}" width="100%"
+                                            items="{eligibleTiersConfig>/}" showSecondaryValues="true">
                                             <items>
-                                                <core:Item id="cellIPTierSilver" key="silver" text="{i18n>tierSilver}" />
-                                                <core:Item id="cellIPTierGold" key="gold" text="{i18n>tierGold}" />
+                                                <core:ListItem id="cellIPTierItem" key="{eligibleTiersConfig>partnerTier}" text="{eligibleTiersConfig>partnerTier}" additionalText="{eligibleTiersConfig>revenueBand}" />
                                             </items>
                                         </ComboBox>
                                         <DatePicker id="cellIPStartDate" value="{incentivePrograms>startDate}" placeholder="{i18n>phStartDate}" width="100%" />
@@ -259,8 +176,57 @@
                 <Page id="paymentApprovalPage" title="{i18n>navPaymentApproval}">
                     <IllustratedMessage id="paymentApprovalIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>paymentApprovalComingSoonDesc}" />
                 </Page>
-                <Page id="partnerMappingsPage" title="{i18n>navPartnerMappings}">
-                    <IllustratedMessage id="partnerMappingsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>partnerMappingsComingSoonDesc}" />
+                <Page id="partnerMappingsPage" showHeader="false">
+                    <content>
+                        <VBox id="partnerAssignmentHeaderVBox">
+                            <HBox id="partnerAssignmentHeaderHBox" class="sapUiSmallMargin" alignItems="Center">
+                                <core:Icon id="partnerAssignmentIcon" src="sap-icon://collaborate" size="2rem" class="sapUiSmallMarginEnd" />
+                                <Title id="partnerAssignmentTitle" text="{i18n>partnerAssignmentTitle}" level="H2" />
+                            </HBox>
+                            <Text id="partnerAssignmentDesc" text="{i18n>partnerAssignmentDescription}" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" />
+                        </VBox>
+                        <OverflowToolbar id="partnerAssignmentToolbar">
+                            <Title id="partnerAssignmentTableTitle" text="Assignments (0)" level="H5" />
+                            <ToolbarSpacer id="partnerAssignmentToolbarSpacer" />
+                            <Button id="btnAddAssignmentRow" text="{i18n>btnAdd}" icon="sap-icon://add" press="onAddAssignmentRow" type="Transparent" />
+                            <Button id="btnSaveAssignments" text="{i18n>btnSave}" icon="sap-icon://save" press="onSaveAssignments" type="Success" />
+                        </OverflowToolbar>
+                        <Table id="tblPartnerAssignments" items="{partnerAssignments>/}" growing="true" growingThreshold="50">
+                            <noData>
+                                <IllustratedMessage id="partnerAssignmentsEmptyIllustration" illustrationType="sapIllus-AddColumn" title="{i18n>noAssignmentsTitle}" description="{i18n>noAssignmentsDesc}" />
+                            </noData>
+                            <columns>
+                                <Column id="colPAPartnerName">
+                                    <Text id="colPAPartnerNameHeader" text="{i18n>lblPartnerName}" />
+                                </Column>
+                                <Column id="colPAIncentivePlan">
+                                    <Text id="colPAIncentivePlanHeader" text="{i18n>lblIncentivePlan}" />
+                                </Column>
+                                <Column id="colPADelete" width="60px" hAlign="Center">
+                                    <Text id="colPADeleteHeader" text="" />
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem id="rowPartnerAssignment">
+                                    <cells>
+                                        <ComboBox id="cellPAPartnerName" selectedKey="{partnerAssignments>partnerName}" placeholder="{i18n>phSelectPartner}" width="100%"
+                                            items="{onboardedPartners>/}">
+                                            <items>
+                                                <core:Item id="cellPAPartnerItem" key="{onboardedPartners>key}" text="{onboardedPartners>text}" />
+                                            </items>
+                                        </ComboBox>
+                                        <ComboBox id="cellPAIncentivePlan" selectedKey="{partnerAssignments>incentivePlan}" placeholder="{i18n>phSelectIncentivePlan}" width="100%"
+                                            items="{planNames>/}">
+                                            <items>
+                                                <core:Item id="cellPAPlanItem" key="{planNames>key}" text="{planNames>text}" />
+                                            </items>
+                                        </ComboBox>
+                                        <Button id="cellPADelete" icon="sap-icon://delete" type="Transparent" press="onDeleteAssignmentRow" />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </content>
                 </Page>
                 <Page id="configDataSourcesPage" showHeader="false">
                     <content>
@@ -282,6 +248,16 @@
                                                         <core:CustomData id="configListItemIncentiveTypesKey" key="key" value="incentiveTypes" />
                                                     </customData>
                                                 </StandardListItem>
+                                                <StandardListItem id="configListItemEligibleTiers" title="{i18n>lblEligibleTiers}" icon="sap-icon://numbered-text" type="Active">
+                                                    <customData>
+                                                        <core:CustomData id="configListItemEligibleTiersKey" key="key" value="eligibleTiers" />
+                                                    </customData>
+                                                </StandardListItem>
+                                                <StandardListItem id="configListItemPartnerTypes" title="{i18n>lblPartnerTypes}" icon="sap-icon://group" type="Active">
+                                                    <customData>
+                                                        <core:CustomData id="configListItemPartnerTypesKey" key="key" value="partnerTypes" />
+                                                    </customData>
+                                                </StandardListItem>
                                             </items>
                                         </List>
                                     </content>
@@ -291,20 +267,18 @@
                                 <Page id="configDetailEmptyPage" showHeader="false">
                                     <IllustratedMessage id="configDetailEmptyIllustration" illustrationType="sapIllus-SimpleNotFoundMagnifier" title="{i18n>selectDataSource}" description="{i18n>selectDataSourceDesc}" />
                                 </Page>
-                                <Page id="configIncentiveTypesPage" title="{i18n>lblIncentiveTypes}">
-                                    <headerContent>
-                                        <OverflowToolbar id="incentiveTypesToolbar">
+                                <Page id="configIncentiveTypesPage">
+                                    <customHeader>
+                                        <OverflowToolbar id="incentiveTypesPageHeader">
+                                            <Title id="incentiveTypesPageTitle" text="{i18n>lblIncentiveTypes} (0)" level="H5" />
                                             <ToolbarSpacer id="incentiveTypesToolbarSpacer" />
                                             <Button id="btnAddIncentiveType" text="{i18n>btnAdd}" icon="sap-icon://add" press="onAddIncentiveTypeRow" type="Transparent" />
                                             <Button id="btnSaveIncentiveTypes" text="{i18n>btnSave}" icon="sap-icon://save" press="onSaveIncentiveTypes" type="Success" />
                                         </OverflowToolbar>
-                                    </headerContent>
+                                    </customHeader>
                                     <content>
                                         <Table id="tblIncentiveTypes" items="{incentiveTypes>/}" growing="true" growingThreshold="50">
                                             <columns>
-                                                <Column id="colSno" width="80px">
-                                                    <Text id="colSnoHeader" text="{i18n>colSno}" />
-                                                </Column>
                                                 <Column id="colIncentiveType">
                                                     <Text id="colIncentiveTypeHeader" text="{i18n>colIncentiveType}" />
                                                 </Column>
@@ -318,10 +292,95 @@
                                             <items>
                                                 <ColumnListItem id="rowIncentiveType">
                                                     <cells>
-                                                        <Text id="cellSno" text="{incentiveTypes>sno}" />
                                                         <Input id="cellIncentiveType" value="{incentiveTypes>incentiveType}" placeholder="{i18n>phEnterIncentiveType}" />
                                                         <Switch id="cellActive" state="{incentiveTypes>active}" type="AcceptReject" />
                                                         <Button id="cellDelete" icon="sap-icon://delete" type="Transparent" press="onDeleteIncentiveTypeRow" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Page>
+                                <Page id="configEligibleTiersPage">
+                                    <customHeader>
+                                        <OverflowToolbar id="eligibleTiersPageHeader">
+                                            <Title id="eligibleTiersPageTitle" text="{i18n>lblEligibleTiers} (0)" level="H5" />
+                                            <ToolbarSpacer id="eligibleTiersToolbarSpacer" />
+                                            <Button id="btnAddEligibleTier" text="{i18n>btnAdd}" icon="sap-icon://add" press="onAddEligibleTierRow" type="Transparent" />
+                                            <Button id="btnSaveEligibleTiers" text="{i18n>btnSave}" icon="sap-icon://save" press="onSaveEligibleTiers" type="Success" />
+                                        </OverflowToolbar>
+                                    </customHeader>
+                                    <content>
+                                        <Table id="tblEligibleTiers" items="{eligibleTiers>/}" growing="true" growingThreshold="50">
+                                            <columns>
+                                                <Column id="colETPartnerTier">
+                                                    <Text id="colETPartnerTierHeader" text="{i18n>colPartnerTier}" />
+                                                </Column>
+                                                <Column id="colETRevenueBand">
+                                                    <Text id="colETRevenueBandHeader" text="{i18n>colRevenueBand}" />
+                                                </Column>
+                                                <Column id="colETRegion">
+                                                    <Text id="colETRegionHeader" text="{i18n>colRegion}" />
+                                                </Column>
+                                                <Column id="colETTier">
+                                                    <Text id="colETTierHeader" text="{i18n>colTier}" />
+                                                </Column>
+                                                <Column id="colETEligibilityFlag" width="120px">
+                                                    <Text id="colETEligibilityFlagHeader" text="{i18n>colEligibilityFlag}" />
+                                                </Column>
+                                                <Column id="colETDelete" width="60px" hAlign="Center">
+                                                    <Text id="colETDeleteHeader" text="" />
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="rowEligibleTier">
+                                                    <cells>
+                                                        <Input id="cellETPartnerTier" value="{eligibleTiers>partnerTier}" placeholder="{i18n>phPartnerTier}" />
+                                                        <Input id="cellETRevenueBand" value="{eligibleTiers>revenueBand}" placeholder="{i18n>phRevenueBand}" />
+                                                        <Input id="cellETRegion" value="{eligibleTiers>region}" placeholder="{i18n>phRegion}" />
+                                                        <Input id="cellETTier" value="{eligibleTiers>tier}" placeholder="{i18n>phTier}" />
+                                                        <ComboBox id="cellETEligibilityFlag" selectedKey="{eligibleTiers>eligibilityFlag}" placeholder="{i18n>phEligibilityFlag}" width="100%">
+                                                            <items>
+                                                                <core:Item id="cellETFlagYes" key="Yes" text="Yes" />
+                                                                <core:Item id="cellETFlagNo" key="No" text="No" />
+                                                                <core:Item id="cellETFlagNA" key="N/A" text="N/A" />
+                                                            </items>
+                                                        </ComboBox>
+                                                        <Button id="cellETDelete" icon="sap-icon://delete" type="Transparent" press="onDeleteEligibleTierRow" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Page>
+                                <Page id="configPartnerTypesPage">
+                                    <customHeader>
+                                        <OverflowToolbar id="partnerTypesPageHeader">
+                                            <Title id="partnerTypesPageTitle" text="{i18n>lblPartnerTypes} (0)" level="H5" />
+                                            <ToolbarSpacer id="partnerTypesToolbarSpacer" />
+                                            <Button id="btnAddPartnerType" text="{i18n>btnAdd}" icon="sap-icon://add" press="onAddPartnerTypeRow" type="Transparent" />
+                                            <Button id="btnSavePartnerTypes" text="{i18n>btnSave}" icon="sap-icon://save" press="onSavePartnerTypes" type="Success" />
+                                        </OverflowToolbar>
+                                    </customHeader>
+                                    <content>
+                                        <Table id="tblPartnerTypes" items="{partnerTypes>/}" growing="true" growingThreshold="50">
+                                            <columns>
+                                                <Column id="colPTPartnerType">
+                                                    <Text id="colPTPartnerTypeHeader" text="{i18n>colPartnerType}" />
+                                                </Column>
+                                                <Column id="colPTActive" width="120px" hAlign="Center">
+                                                    <Text id="colPTActiveHeader" text="{i18n>colActive}" />
+                                                </Column>
+                                                <Column id="colPTDelete" width="80px" hAlign="Center">
+                                                    <Text id="colPTDeleteHeader" text="" />
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="rowPartnerType">
+                                                    <cells>
+                                                        <Input id="cellPTPartnerType" value="{partnerTypes>partnerType}" placeholder="{i18n>phEnterPartnerType}" />
+                                                        <Switch id="cellPTActive" state="{partnerTypes>active}" type="AcceptReject" />
+                                                        <Button id="cellPTDelete" icon="sap-icon://delete" type="Transparent" press="onDeletePartnerTypeRow" />
                                                     </cells>
                                                 </ColumnListItem>
                                             </items>
@@ -332,8 +391,75 @@
                         </SplitContainer>
                     </content>
                 </Page>
-                <Page id="configCustomizationsPage" title="{i18n>navCustomizations}">
-                    <IllustratedMessage id="customizationsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>customizationsComingSoonDesc}" />
+                <Page id="configCustomizationsPage" showHeader="false">
+                    <content>
+                        <VBox id="configCustomizationsHeaderVBox">
+                            <HBox id="configCustomizationsHeaderHBox" class="sapUiSmallMargin" alignItems="Center">
+                                <core:Icon id="configCustomizationsIcon" src="sap-icon://customize" size="2rem" class="sapUiSmallMarginEnd" />
+                                <Title id="configCustomizationsTitle" text="{i18n>navCustomizations}" level="H2" />
+                            </HBox>
+                            <Text id="configCustomizationsDesc" text="{i18n>customizationsDescription}" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" />
+                        </VBox>
+                        <SplitContainer id="customizationsSplitContainer">
+                            <masterPages>
+                                <Page id="customizationsMasterPage" title="{i18n>lblModules}" showNavButton="false">
+                                    <content>
+                                        <List id="customizationsModuleList" mode="SingleSelectMaster" selectionChange="onCustomizationModuleSelect">
+                                            <items>
+                                                <StandardListItem id="custListItemPartnerOnboarding" title="{i18n>navPartnerOnboarding}" icon="sap-icon://add-employee" type="Active">
+                                                    <customData>
+                                                        <core:CustomData id="custListItemPartnerOnboardingKey" key="key" value="partnerOnboarding" />
+                                                    </customData>
+                                                </StandardListItem>
+                                            </items>
+                                        </List>
+                                    </content>
+                                </Page>
+                            </masterPages>
+                            <detailPages>
+                                <Page id="customizationsDetailEmptyPage" showHeader="false">
+                                    <IllustratedMessage id="customizationsDetailEmptyIllustration" illustrationType="sapIllus-SimpleNotFoundMagnifier" title="{i18n>selectModule}" description="{i18n>selectModuleDesc}" />
+                                </Page>
+                                <Page id="customizationsPartnerOnboardingPage">
+                                    <customHeader>
+                                        <OverflowToolbar id="fieldCustomizationsPageHeader">
+                                            <Title id="fieldCustomizationsTableTitle" text="{i18n>navPartnerOnboarding} (0)" level="H5" />
+                                            <ToolbarSpacer id="fieldCustomizationsToolbarSpacer" />
+                                            <Button id="btnSaveFieldCustomizations" text="{i18n>btnSave}" icon="sap-icon://save" press="onSaveFieldCustomizations" type="Success" />
+                                        </OverflowToolbar>
+                                    </customHeader>
+                                    <content>
+                                        <Table id="tblFieldCustomizations" items="{fieldCustomizations>/}" growing="true" growingThreshold="50">
+                                            <columns>
+                                                <Column id="colFCColumnName">
+                                                    <Text id="colFCColumnNameHeader" text="{i18n>colColumnName}" />
+                                                </Column>
+                                                <Column id="colFCDefaultLabel">
+                                                    <Text id="colFCDefaultLabelHeader" text="{i18n>colDefaultLabel}" />
+                                                </Column>
+                                                <Column id="colFCCustomLabel">
+                                                    <Text id="colFCCustomLabelHeader" text="{i18n>colCustomLabel}" />
+                                                </Column>
+                                                <Column id="colFCEnabled" width="120px" hAlign="Center">
+                                                    <Text id="colFCEnabledHeader" text="{i18n>colEnableDisable}" />
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem id="rowFieldCustomization">
+                                                    <cells>
+                                                        <Text id="cellFCColumnName" text="{fieldCustomizations>columnName}" />
+                                                        <Text id="cellFCDefaultLabel" text="{fieldCustomizations>defaultLabel}" />
+                                                        <Input id="cellFCCustomLabel" value="{fieldCustomizations>customLabel}" placeholder="{i18n>phCustomLabel}" />
+                                                        <Switch id="cellFCEnabled" state="{fieldCustomizations>enabled}" type="AcceptReject" enabled="{= !${fieldCustomizations>fixed} }" />
+                                                    </cells>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </content>
+                                </Page>
+                            </detailPages>
+                        </SplitContainer>
+                    </content>
                 </Page>
                 <Page id="settingsPage" title="{i18n>navSettings}">
                     <IllustratedMessage id="settingsIllustration" illustrationType="sapIllus-EmptyList" title="{i18n>comingSoon}" description="{i18n>settingsComingSoonDesc}" />
