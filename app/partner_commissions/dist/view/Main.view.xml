@@ -21,6 +21,7 @@
                 <tnt:NavigationList id="mainNavList">
                     <tnt:NavigationListItem id="navItemDashboard" text="{i18n>navDashboard}" icon="sap-icon://home" key="dashboard" />
                     <tnt:NavigationListItem id="navItemPartnerOnboarding" text="{i18n>navPartnerOnboarding}" icon="sap-icon://add-employee" key="partnerOnboarding" />
+                    <tnt:NavigationListItem id="navItemPartnerAnalytics" text="{i18n>navPartnerAnalytics}" icon="sap-icon://business-objects-experience" key="partnerAnalytics" />
                     <tnt:NavigationListItem id="navItemIncentiveProgram" text="{i18n>navIncentiveProgramSetup}" icon="sap-icon://competitor" key="incentiveProgramSetup" />
                     <tnt:NavigationListItem id="navItemPartnerAssignment" text="{i18n>navPartnerAssignment}" icon="sap-icon://collaborate" key="partnerAssignment" />
                     <tnt:NavigationListItem id="navItemPartnerHierarchy" text="{i18n>navPartnerHierarchySetup}" icon="sap-icon://org-chart" key="partnerHierarchySetup" />
@@ -73,6 +74,108 @@
                                 <IllustratedMessage id="partnersEmptyIllustration" illustrationType="sapIllus-AddColumn" title="{i18n>noPartnersTitle}" description="{i18n>noPartnersDesc}" />
                             </noData>
                         </Table>
+                    </content>
+                </Page>
+
+                <!-- Partner Analytics Page -->
+                <Page id="partnerAnalyticsPage" showHeader="false">
+                    <content>
+                        <VBox id="partnerAnalyticsHeaderVBox">
+                            <HBox id="partnerAnalyticsHeaderHBox" class="sapUiSmallMargin" alignItems="Center">
+                                <core:Icon id="partnerAnalyticsIcon" src="sap-icon://business-objects-experience" size="2rem" class="sapUiSmallMarginEnd" />
+                                <Title id="partnerAnalyticsTitle" text="{i18n>partnerAnalyticsTitle}" level="H2" />
+                            </HBox>
+                            <Text id="partnerAnalyticsDesc" text="{i18n>partnerAnalyticsDescription}" class="sapUiSmallMarginBegin sapUiSmallMarginBottom" />
+                        </VBox>
+                        <OverflowToolbar id="analyticsFilterToolbar" class="sapUiSmallMarginTop">
+                            <core:Icon id="analyticsFilterIcon" src="sap-icon://filter" />
+                            <Title id="analyticsFilterTitle" text="{i18n>lblFilters}" level="H5" />
+                            <ToolbarSpacer id="analyticsFilterSpacer" />
+                            <Button id="btnAnalyticsGo" text="{i18n>btnGo}" type="Emphasized" icon="sap-icon://search" press="onAnalyticsGo" />
+                        </OverflowToolbar>
+                        <HBox id="analyticsFilterBar" wrap="Wrap" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiTinyMarginTop" alignItems="End">
+                            <VBox id="filterGroupPeriod" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                                <Label id="lblAnalyticsPeriod" text="{i18n>lblSelectPeriod}" />
+                                <MultiComboBox id="cmbAnalyticsPeriods" placeholder="{i18n>phSelectPeriod}" width="16rem"
+                                    items="{periodsData>/}" showSecondaryValues="true">
+                                    <items>
+                                        <core:ListItem id="cmbAnalyticsPeriodsItem" key="{periodsData>PERIODSEQ}" text="{periodsData>NAME}" additionalText="{periodsData>PERIOD_RANGE}" />
+                                    </items>
+                                </MultiComboBox>
+                            </VBox>
+                            <VBox id="filterGroupProduct" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                                <Label id="lblAnalyticsProduct" text="{i18n>lblProductId}" />
+                                <MultiComboBox id="cmbAnalyticsProducts" placeholder="{i18n>phSelectProduct}" width="16rem"
+                                    items="{productsData>/}" showSecondaryValues="true">
+                                    <items>
+                                        <core:ListItem id="cmbAnalyticsProductsItem" key="{productsData>PRODUCTID}" text="{productsData>PRODUCTID}" additionalText="{productsData>PRODUCTNAME}" />
+                                    </items>
+                                </MultiComboBox>
+                            </VBox>
+                            <VBox id="filterGroupCreditType" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                                <Label id="lblAnalyticsCreditType" text="{i18n>lblCreditType}" />
+                                <MultiComboBox id="cmbAnalyticsCreditTypes" placeholder="{i18n>phSelectCreditType}" width="16rem"
+                                    items="{creditTypesData>/}">
+                                    <items>
+                                        <core:Item id="cmbAnalyticsCreditTypesItem" key="{creditTypesData>CREDITTYPEID}" text="{creditTypesData>CREDITTYPEID}" />
+                                    </items>
+                                </MultiComboBox>
+                            </VBox>
+                            <VBox id="filterGroupCompDate" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                                <Label id="lblAnalyticsCompDate" text="{i18n>lblCompensationDate}" />
+                                <DateRangeSelection id="drsAnalyticsCompDate" placeholder="{i18n>phSelectCompDateRange}" width="16rem" />
+                            </VBox>
+                            <VBox id="filterGroupCustomer" class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                                <Label id="lblAnalyticsCustomer" text="{i18n>lblCustomer}" />
+                                <ComboBox id="cmbAnalyticsCustomer" placeholder="{i18n>phSelectCustomer}" width="16rem" />
+                            </VBox>
+                        </HBox>
+                        <VBox id="partnerAnalyticsContentVBox" class="sapUiSmallMargin">
+                            <OverflowToolbar id="analyticsChartToolbar" visible="{= ${analyticsChartData>/}.length > 0 }">
+                                <Label id="lblChartType" text="{i18n>lblChartType}" class="sapUiTinyMarginEnd" />
+                                <SegmentedButton id="chartTypeSelector" selectionChange=".onChartTypeChange" selectedKey="{chartConfig>/chartType}">
+                                    <items>
+                                        <SegmentedButtonItem id="chartTypeColumn" key="column" icon="sap-icon://horizontal-bar-chart" tooltip="{i18n>ttColumnChart}" />
+                                        <SegmentedButtonItem id="chartTypeBar" key="bar" icon="sap-icon://horizontal-bar-chart-2" tooltip="{i18n>ttBarChart}" />
+                                        <SegmentedButtonItem id="chartTypeLine" key="line" icon="sap-icon://line-chart" tooltip="{i18n>ttLineChart}" />
+                                        <SegmentedButtonItem id="chartTypeArea" key="area" icon="sap-icon://area-chart" tooltip="{i18n>ttAreaChart}" />
+                                        <SegmentedButtonItem id="chartTypePie" key="pie" icon="sap-icon://pie-chart" tooltip="{i18n>ttPieChart}" />
+                                        <SegmentedButtonItem id="chartTypeDonut" key="donut" icon="sap-icon://donut-chart" tooltip="{i18n>ttDonutChart}" />
+                                    </items>
+                                </SegmentedButton>
+                                <ToolbarSeparator id="chartSep1" class="sapUiSmallMarginBegin sapUiSmallMarginEnd" />
+                                <Label id="lblDimension" text="{i18n>lblDimension}" class="sapUiTinyMarginEnd" />
+                                <Select id="chartDimensionSelector" change=".onChartDimensionChange" selectedKey="{chartConfig>/dimension}" width="180px">
+                                    <items>
+                                        <core:Item id="dimProduct" key="PRODUCTID" text="{i18n>dimProduct}" />
+                                        <core:Item id="dimCreditType" key="CREDITTYPEID" text="{i18n>dimCreditType}" />
+                                        <core:Item id="dimCompDate" key="COMPENSATIONDATE" text="{i18n>dimCompensationDate}" />
+                                    </items>
+                                </Select>
+                                <Label id="lblMeasure" text="{i18n>lblMeasure}" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" />
+                                <Select id="chartMeasureSelector" change=".onChartMeasureChange" selectedKey="{chartConfig>/measure}" width="180px">
+                                    <items>
+                                        <core:Item id="measureTxnCount" key="TransactionCount" text="{i18n>measureTransactionCount}" />
+                                        <core:Item id="measureAmount" key="Amount" text="{i18n>measureAmount}" />
+                                    </items>
+                                </Select>
+                                <Label id="lblTopN" text="{i18n>lblTopN}" class="sapUiTinyMarginBegin sapUiTinyMarginEnd" />
+                                <Select id="chartTopNSelector" change=".onChartTopNChange" selectedKey="{chartConfig>/topN}" width="80px">
+                                    <items>
+                                        <core:Item id="topN10" key="10" text="10" />
+                                        <core:Item id="topN20" key="20" text="20" />
+                                        <core:Item id="topN30" key="30" text="30" />
+                                        <core:Item id="topN50" key="50" text="50" />
+                                        <core:Item id="topNAll" key="all" text="{i18n>topNAll}" />
+                                    </items>
+                                </Select>
+                                <ToolbarSpacer id="chartToolbarSpacer" />
+                            </OverflowToolbar>
+                            <VBox id="analyticsChartBox" visible="{= ${analyticsChartData>/}.length > 0 }" height="500px" class="sapUiSmallMarginTop" width="100%">
+                                <core:HTML id="analyticsChartHtml" content="&lt;canvas id='partnerAnalyticsChart' style='width:100%;height:480px;'&gt;&lt;/canvas&gt;" />
+                            </VBox>
+                            <IllustratedMessage id="partnerAnalyticsPlaceholder" visible="{= ${analyticsChartData>/}.length === 0 }" illustrationType="sapIllus-EmptyList" title="{i18n>analyticsPlaceholderTitle}" description="{i18n>analyticsPlaceholderDesc}" />
+                        </VBox>
                     </content>
                 </Page>
 

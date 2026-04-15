@@ -116,6 +116,7 @@ sap.ui.define([
         _navKeyToPageId: {
             dashboard: "dashboardPage",
             partnerOnboarding: "partnerOnboardingPage",
+            partnerAnalytics: "partnerAnalyticsPage",
             incentiveProgramSetup: "incentiveProgramSetupPage",
             riskScreening: "riskScreeningPage",
             paymentScheduleSetup: "paymentScheduleSetupPage",
@@ -142,7 +143,22 @@ sap.ui.define([
             this.getView().setModel(new JSONModel([]), "onboardedPartners");
             this.getView().setModel(new JSONModel([]), "fieldCustomizations");
             this.getView().setModel(new JSONModel([]), "partnerTypes");
+            this.getView().setModel(new JSONModel([]), "periodsData");
+            this.getView().setModel(new JSONModel([]), "productsData");
+            this.getView().setModel(new JSONModel([]), "creditTypesData");
+            this.getView().setModel(new JSONModel([]), "analyticsRawData");
+            this.getView().setModel(new JSONModel([]), "analyticsChartData");
+            this.getView().setModel(new JSONModel({
+                chartType: "column",
+                dimension: "PRODUCTID",
+                measure: "TransactionCount",
+                topN: "10"
+            }), "chartConfig");
 
+            this._loadChartJS();
+            this._loadPeriods();
+            this._loadProducts();
+            this._loadCreditTypes();
             this._loadPlanNames();
             this._loadIncentiveTypes();
             this._loadEligibleTiers();
@@ -535,6 +551,130 @@ sap.ui.define([
         },
 
         /**
+         * Fetch periods from TCMP destination and populate the Partner Analytics period MultiComboBox
+         */
+        _loadPeriods() {
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/CS_V_PERIODS/CS_V_PERIODS?$filter=((PERIODTYPESEQ eq 2814749767106569 or PERIODTYPESEQ eq 2814749767106563 or PERIODTYPESEQ eq 2814749767106561) and REMOVEDATE eq 2200-01-01T00:00:00.0000000Z)";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch periods");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = (oData.value || []).filter(function (obj) {
+                        return obj.CREATEDBY === "Administrator";
+                    });
+
+                    var aProcessed = aRecords.map(function (item) {
+                        var sStart = item.STARTDATE ? item.STARTDATE.split("T")[0] : "";
+                        var sEnd = "";
+                        if (item.ENDDATE) {
+                            var oEnd = new Date(item.ENDDATE.split("T")[0]);
+                            oEnd.setDate(oEnd.getDate() - 1);
+                            sEnd = oEnd.toISOString().split("T")[0];
+                        }
+                        item.PERIOD_RANGE = sStart + " to " + sEnd;
+                        return item;
+                    });
+
+                    var oModel = that.getView().getModel("periodsData");
+                    oModel.setSizeLimit(aProcessed.length);
+                    oModel.setData(aProcessed);
+                })
+                .catch(function (oError) {
+                    MessageBox.error("Error fetching periods: " + oError.message);
+                });
+        },
+
+        /**
+         * Fetch products from TCMP destination and populate the Product ID MultiComboBox
+         */
+        _loadProducts() {
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/V_CS_SALESTRANSACTION/V_CS_SALESTRANSACTION";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch products");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var aUnique = [];
+                    var oSeen = {};
+                    aRecords.forEach(function (oRecord) {
+                        var sKey = oRecord.PRODUCTID;
+                        if (sKey && !oSeen[sKey]) {
+                            oSeen[sKey] = true;
+                            aUnique.push({
+                                PRODUCTID: sKey,
+                                PRODUCTNAME: oRecord.PRODUCTNAME || sKey
+                            });
+                        }
+                    });
+                    aUnique.sort(function (a, b) { return a.PRODUCTID.localeCompare(b.PRODUCTID); });
+
+                    var oModel = that.getView().getModel("productsData");
+                    oModel.setSizeLimit(aUnique.length);
+                    oModel.setData(aUnique);
+                })
+                .catch(function (oError) {
+                    MessageBox.error("Error fetching products: " + oError.message);
+                });
+        },
+
+        /**
+         * Fetch credit types from TCMP destination and populate the Credit Type MultiComboBox
+         */
+        _loadCreditTypes() {
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/CS_V_CREDITTYPES/CS_V_CREDITTYPES";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch credit types");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var aUnique = [];
+                    var oSeen = {};
+                    aRecords.forEach(function (oRecord) {
+                        var sKey = oRecord.CREDITTYPEID;
+                        if (sKey && !oSeen[sKey]) {
+                            oSeen[sKey] = true;
+                            aUnique.push({ CREDITTYPEID: sKey });
+                        }
+                    });
+                    aUnique.sort(function (a, b) { return a.CREDITTYPEID.localeCompare(b.CREDITTYPEID); });
+
+                    var oModel = that.getView().getModel("creditTypesData");
+                    oModel.setSizeLimit(aUnique.length);
+                    oModel.setData(aUnique);
+                })
+                .catch(function (oError) {
+                    MessageBox.error("Error fetching credit types: " + oError.message);
+                });
+        },
+
+        /**
          * Fetch plan names from TCMP destination and populate the Plan Name combo box
          */
         _loadPlanNames() {
@@ -571,6 +711,338 @@ sap.ui.define([
                 .catch(function () {
                     MessageToast.show("Unable to load plan names.");
                 });
+        },
+
+        /**
+         * Load Chart.js library from CDN
+         */
+        _loadChartJS() {
+            if (!window.Chart) {
+                var script = document.createElement("script");
+                script.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+                script.async = true;
+                script.onload = function () { console.log("Chart.js loaded successfully"); };
+                script.onerror = function () { console.error("Failed to load Chart.js library"); };
+                document.head.appendChild(script);
+            }
+        },
+
+        /**
+         * Handle Go button press on Partner Analytics filters — build $filter and fetch data
+         */
+        onAnalyticsGo() {
+            var oBundle = this.getView().getModel("i18n").getResourceBundle();
+
+            // Collect filter values
+            var aPeriodKeys = this.byId("cmbAnalyticsPeriods").getSelectedKeys();
+            var aProductKeys = this.byId("cmbAnalyticsProducts").getSelectedKeys();
+            var aCreditTypeKeys = this.byId("cmbAnalyticsCreditTypes").getSelectedKeys();
+            var oDrs = this.byId("drsAnalyticsCompDate");
+            var oDateFrom = oDrs.getDateValue();
+            var oDateTo = oDrs.getSecondDateValue();
+
+            // At least one filter mandatory
+            if (aPeriodKeys.length === 0 && aProductKeys.length === 0 && aCreditTypeKeys.length === 0 && !oDateFrom) {
+                MessageBox.warning(oBundle.getText("msgAtLeastOneFilter"));
+                return;
+            }
+
+            // Build OData $filter parts
+            var aFilters = [];
+
+            if (aPeriodKeys.length > 0) {
+                var sPeriodFilter = aPeriodKeys.map(function (k) { return "PERIODSEQ eq " + k; }).join(" or ");
+                aFilters.push("(" + sPeriodFilter + ")");
+            }
+            if (aProductKeys.length > 0) {
+                var sProductFilter = aProductKeys.map(function (k) { return "PRODUCTID eq '" + k + "'"; }).join(" or ");
+                aFilters.push("(" + sProductFilter + ")");
+            }
+            if (aCreditTypeKeys.length > 0) {
+                var sCreditFilter = aCreditTypeKeys.map(function (k) { return "CREDITTYPEID eq '" + k + "'"; }).join(" or ");
+                aFilters.push("(" + sCreditFilter + ")");
+            }
+            if (oDateFrom && oDateTo) {
+                var sFrom = oDateFrom.toISOString().split("T")[0] + "T00:00:00.0000000Z";
+                var sTo = oDateTo.toISOString().split("T")[0] + "T00:00:00.0000000Z";
+                aFilters.push("(COMPENSATIONDATE ge " + sFrom + " and COMPENSATIONDATE le " + sTo + ")");
+            } else if (oDateFrom) {
+                var sDateOnly = oDateFrom.toISOString().split("T")[0] + "T00:00:00.0000000Z";
+                aFilters.push("(COMPENSATIONDATE eq " + sDateOnly + ")");
+            }
+
+            var sFilter = aFilters.join(" and ");
+
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/SYZ_CA_PARTNER_ANALYTICS/SYZ_CA_PARTNER_ANALYTICS";
+            if (sFilter) {
+                sUrl += "?$filter=" + encodeURIComponent(sFilter);
+            }
+
+            var that = this;
+            sap.ui.core.BusyIndicator.show(0);
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) { throw new Error("Failed to fetch analytics data"); }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    that.getView().getModel("analyticsRawData").setData(aRecords);
+
+                    if (aRecords.length === 0) {
+                        that.getView().getModel("analyticsChartData").setData([]);
+                        MessageToast.show(oBundle.getText("msgNoAnalyticsData"));
+                    } else {
+                        that._updateAnalyticsChart();
+                        MessageToast.show(oBundle.getText("msgAnalyticsDataLoaded", [aRecords.length]));
+                    }
+                    sap.ui.core.BusyIndicator.hide();
+                })
+                .catch(function (oError) {
+                    sap.ui.core.BusyIndicator.hide();
+                    MessageBox.error("Error fetching analytics: " + oError.message);
+                });
+        },
+
+        // ========== Chart Configuration Handlers ==========
+
+        onChartTypeChange(oEvent) {
+            var sKey = oEvent.getParameter("item").getKey();
+            this.getView().getModel("chartConfig").setProperty("/chartType", sKey);
+            this._updateAnalyticsChart();
+        },
+
+        onChartDimensionChange(oEvent) {
+            var sKey = oEvent.getParameter("selectedItem").getKey();
+            this.getView().getModel("chartConfig").setProperty("/dimension", sKey);
+            this._updateAnalyticsChart();
+        },
+
+        onChartMeasureChange(oEvent) {
+            var sKey = oEvent.getParameter("selectedItem").getKey();
+            this.getView().getModel("chartConfig").setProperty("/measure", sKey);
+            this._updateAnalyticsChart();
+        },
+
+        onChartTopNChange(oEvent) {
+            var sKey = oEvent.getParameter("selectedItem").getKey();
+            this.getView().getModel("chartConfig").setProperty("/topN", sKey);
+            this._updateAnalyticsChart();
+        },
+
+        // ========== Chart Data Aggregation ==========
+
+        /**
+         * Aggregate raw analytics data and render the chart
+         */
+        _updateAnalyticsChart() {
+            var aRawData = this.getView().getModel("analyticsRawData").getData();
+            if (!aRawData || aRawData.length === 0) { return; }
+
+            var oConfig = this.getView().getModel("chartConfig").getData();
+            var sDimension = oConfig.dimension;
+            var sMeasure = oConfig.measure;
+            var sTopN = oConfig.topN;
+            var sChartType = oConfig.chartType;
+
+            // Group data by dimension
+            var oGrouped = {};
+            aRawData.forEach(function (item) {
+                var sDimValue;
+                switch (sDimension) {
+                    case "PRODUCTID":
+                        sDimValue = (item.PRODUCTID || "Unknown") + " - " + (item.PRODUCTNAME || "");
+                        break;
+                    case "CREDITTYPEID":
+                        sDimValue = item.CREDITTYPEID || "Unknown";
+                        break;
+                    case "COMPENSATIONDATE":
+                        sDimValue = item.COMPENSATIONDATE ? item.COMPENSATIONDATE.split("T")[0] : "Unknown";
+                        break;
+                    default:
+                        sDimValue = item[sDimension] || "Unknown";
+                }
+
+                if (!oGrouped[sDimValue]) {
+                    oGrouped[sDimValue] = { dimension: sDimValue, totalAmount: 0, recordCount: 0 };
+                }
+                oGrouped[sDimValue].totalAmount += (parseFloat(item.VALUE) || 0);
+                oGrouped[sDimValue].recordCount++;
+            });
+
+            // Build chart data array
+            var aChartData = Object.values(oGrouped).map(function (g) {
+                return {
+                    dimension: g.dimension,
+                    value: sMeasure === "Amount" ? g.totalAmount : g.recordCount
+                };
+            });
+
+            // Sort descending by value
+            aChartData.sort(function (a, b) { return b.value - a.value; });
+
+            // Apply Top N
+            if (sTopN !== "all") {
+                aChartData = aChartData.slice(0, parseInt(sTopN, 10));
+            }
+
+            this.getView().getModel("analyticsChartData").setData(aChartData);
+
+            var that = this;
+            setTimeout(function () {
+                that._renderAnalyticsChart(aChartData, sChartType, sDimension, sMeasure);
+            }, 150);
+        },
+
+        // ========== Chart Rendering ==========
+
+        /**
+         * Render the analytics chart using Chart.js
+         */
+        _renderAnalyticsChart(aChartData, sChartType, sDimension, sMeasure) {
+            if (!window.Chart) {
+                MessageToast.show("Chart library is still loading. Please try again.");
+                return;
+            }
+
+            var oCanvas = document.getElementById("partnerAnalyticsChart");
+            if (!oCanvas) {
+                var that = this;
+                setTimeout(function () { that._renderAnalyticsChart(aChartData, sChartType, sDimension, sMeasure); }, 200);
+                return;
+            }
+
+            this._destroyAnalyticsChart();
+
+            var aLabels = aChartData.map(function (item) { return item.dimension; });
+            var aValues = aChartData.map(function (item) { return item.value; });
+
+            // Map to Chart.js types
+            var sChartJsType = sChartType;
+            if (sChartType === "column") { sChartJsType = "bar"; }
+            else if (sChartType === "donut") { sChartJsType = "doughnut"; }
+            else if (sChartType === "area") { sChartJsType = "line"; }
+
+            var aColors = this._generateChartColors(aChartData.length);
+
+            var sDimensionLabel = sDimension === "PRODUCTID" ? "Product" : sDimension === "CREDITTYPEID" ? "Credit Type" : "Compensation Date";
+            var sMeasureLabel = sMeasure === "Amount" ? "Amount ($)" : "No. of Transactions";
+
+            var oConfig = {
+                type: sChartJsType,
+                data: {
+                    labels: aLabels,
+                    datasets: [{
+                        label: sMeasureLabel,
+                        data: aValues,
+                        backgroundColor: sChartType === "area"
+                            ? "rgba(54, 162, 235, 0.4)"
+                            : (sChartJsType === "pie" || sChartJsType === "doughnut" ? aColors : aColors[0]),
+                        borderColor: sChartType === "area"
+                            ? "rgba(54, 162, 235, 1)"
+                            : (sChartJsType === "pie" || sChartJsType === "doughnut" ? aColors : aColors[0]),
+                        borderWidth: sChartType === "area" ? 2 : 1,
+                        fill: sChartType === "area",
+                        tension: sChartType === "area" ? 0.4 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: sChartType === "bar" ? "y" : "x",
+                    plugins: {
+                        legend: {
+                            display: sChartJsType === "pie" || sChartJsType === "doughnut",
+                            position: "right"
+                        },
+                        title: {
+                            display: true,
+                            text: sMeasureLabel + " by " + sDimensionLabel
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    var sLabel = context.dataset.label || "";
+                                    if (sLabel) { sLabel += ": "; }
+                                    var nVal = sChartType === "bar" ? context.parsed.x : context.parsed.y;
+                                    if (sChartJsType === "pie" || sChartJsType === "doughnut") {
+                                        nVal = context.parsed;
+                                    }
+                                    if (sMeasure === "Amount") {
+                                        sLabel += "$" + nVal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                    } else {
+                                        sLabel += nVal;
+                                    }
+                                    return sLabel;
+                                }
+                            }
+                        }
+                    },
+                    scales: (sChartJsType === "pie" || sChartJsType === "doughnut") ? {} :
+                        sChartType === "bar" ? {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return sMeasure === "Amount" ? "$" + value.toLocaleString() : value;
+                                    }
+                                }
+                            },
+                            y: { beginAtZero: true }
+                        } : {
+                            x: { beginAtZero: true },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return sMeasure === "Amount" ? "$" + value.toLocaleString() : value;
+                                    }
+                                }
+                            }
+                        }
+                }
+            };
+
+            this._analyticsChartInstance = new window.Chart(oCanvas, oConfig);
+        },
+
+        /**
+         * Destroy existing analytics chart instance
+         */
+        _destroyAnalyticsChart() {
+            if (this._analyticsChartInstance) {
+                this._analyticsChartInstance.destroy();
+                this._analyticsChartInstance = null;
+            }
+        },
+
+        /**
+         * Generate an array of colors for chart datasets
+         */
+        _generateChartColors(iCount) {
+            var aBaseColors = [
+                "rgba(54, 162, 235, 0.8)",
+                "rgba(255, 99, 132, 0.8)",
+                "rgba(255, 206, 86, 0.8)",
+                "rgba(75, 192, 192, 0.8)",
+                "rgba(153, 102, 255, 0.8)",
+                "rgba(255, 159, 64, 0.8)",
+                "rgba(199, 199, 199, 0.8)",
+                "rgba(83, 102, 255, 0.8)",
+                "rgba(255, 99, 255, 0.8)",
+                "rgba(50, 205, 50, 0.8)"
+            ];
+            if (iCount <= aBaseColors.length) { return aBaseColors.slice(0, iCount); }
+            var aColors = aBaseColors.slice();
+            for (var i = aBaseColors.length; i < iCount; i++) {
+                var hue = (i * 137.508) % 360;
+                aColors.push("hsla(" + hue + ", 70%, 60%, 0.8)");
+            }
+            return aColors;
         },
 
         /**
