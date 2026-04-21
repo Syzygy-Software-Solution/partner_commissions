@@ -10,6 +10,7 @@ sap.ui.define([
     "sap/m/Label",
     "sap/m/Input",
     "sap/m/ComboBox",
+    "sap/m/MultiComboBox",
     "sap/m/DatePicker",
     "sap/m/CheckBox",
     "sap/m/HBox",
@@ -17,7 +18,7 @@ sap.ui.define([
     "sap/m/Button",
     "sap/m/Dialog",
     "sap/ui/layout/form/SimpleForm"
-], (Controller, MessageToast, MessageBox, Item, JSONModel, Column, ColumnListItem, Text, Label, Input, ComboBox, DatePicker, CheckBox, HBox, VBox, Button, Dialog, SimpleForm) => {
+], (Controller, MessageToast, MessageBox, Item, JSONModel, Column, ColumnListItem, Text, Label, Input, ComboBox, MultiComboBox, DatePicker, CheckBox, HBox, VBox, Button, Dialog, SimpleForm) => {
     "use strict";
 
     return Controller.extend("partnercommissions.controller.Main", {
@@ -34,6 +35,7 @@ sap.ui.define([
             effectiveEndDate: "date",
             emailId: "input",
             country: "input",
+            businessUnit: "multicombobox",
             positionName: "input",
             salary: "number",
             unitTypeForSalary: "input",
@@ -63,51 +65,52 @@ sap.ui.define([
             { position: 2, fieldId: "partnerName", columnName: "Partner Name", defaultLabel: "Partner Name", customLabel: "", enabled: true, fixed: true },
             { position: 3, fieldId: "partnerType", columnName: "Partner Type", defaultLabel: "Partner Type", customLabel: "", enabled: true, fixed: true },
             { position: 4, fieldId: "companyRegNumber", columnName: "Company Registration Number", defaultLabel: "Company Registration Number", customLabel: "", enabled: true, fixed: true },
-            { position: 5, fieldId: "effectiveStartDate", columnName: "Effective Start Date", defaultLabel: "Effective Start Date", customLabel: "", enabled: true, fixed: true },
-            { position: 6, fieldId: "effectiveEndDate", columnName: "Effective End Date", defaultLabel: "Effective End Date", customLabel: "", enabled: true, fixed: true },
-            { position: 7, fieldId: "emailId", columnName: "Email ID", defaultLabel: "Email ID", customLabel: "", enabled: true, fixed: true },
-            { position: 8, fieldId: "country", columnName: "Country", defaultLabel: "Country", customLabel: "", enabled: true, fixed: true },
-            { position: 9, fieldId: "positionName", columnName: "Position Name", defaultLabel: "Position Name", customLabel: "", enabled: false, fixed: false },
-            { position: 10, fieldId: "salary", columnName: "Salary", defaultLabel: "Salary", customLabel: "", enabled: false, fixed: false },
-            { position: 11, fieldId: "unitTypeForSalary", columnName: "Unit Type for Salary", defaultLabel: "Unit Type for Salary", customLabel: "", enabled: false, fixed: false },
-            { position: 12, fieldId: "hireDate", columnName: "Hire Date", defaultLabel: "Hire Date", customLabel: "", enabled: false, fixed: false },
-            { position: 13, fieldId: "terminationDate", columnName: "Termination Date", defaultLabel: "Termination Date", customLabel: "", enabled: false, fixed: false },
-            { position: 14, fieldId: "userName", columnName: "User Name", defaultLabel: "User Name", customLabel: "", enabled: false, fixed: false },
-            { position: 15, fieldId: "userId", columnName: "User ID", defaultLabel: "User ID", customLabel: "", enabled: false, fixed: false },
-            { position: 16, fieldId: "genericAttribute1", columnName: "Generic Attribute 1", defaultLabel: "Generic Attribute 1", customLabel: "", enabled: false, fixed: false },
-            { position: 17, fieldId: "genericAttribute2", columnName: "Generic Attribute 2", defaultLabel: "Generic Attribute 2", customLabel: "", enabled: false, fixed: false },
-            { position: 18, fieldId: "genericAttribute3", columnName: "Generic Attribute 3", defaultLabel: "Generic Attribute 3", customLabel: "", enabled: false, fixed: false },
-            { position: 19, fieldId: "genericAttribute4", columnName: "Generic Attribute 4", defaultLabel: "Generic Attribute 4", customLabel: "", enabled: false, fixed: false },
-            { position: 20, fieldId: "genericAttribute5", columnName: "Generic Attribute 5", defaultLabel: "Generic Attribute 5", customLabel: "", enabled: false, fixed: false },
-            { position: 21, fieldId: "genericAttribute6", columnName: "Generic Attribute 6", defaultLabel: "Generic Attribute 6", customLabel: "", enabled: false, fixed: false },
-            { position: 22, fieldId: "genericAttribute7", columnName: "Generic Attribute 7", defaultLabel: "Generic Attribute 7", customLabel: "", enabled: false, fixed: false },
-            { position: 23, fieldId: "genericAttribute8", columnName: "Generic Attribute 8", defaultLabel: "Generic Attribute 8", customLabel: "", enabled: false, fixed: false },
-            { position: 24, fieldId: "genericAttribute9", columnName: "Generic Attribute 9", defaultLabel: "Generic Attribute 9", customLabel: "", enabled: false, fixed: false },
-            { position: 25, fieldId: "genericAttribute10", columnName: "Generic Attribute 10", defaultLabel: "Generic Attribute 10", customLabel: "", enabled: false, fixed: false },
-            { position: 26, fieldId: "genericAttribute11", columnName: "Generic Attribute 11", defaultLabel: "Generic Attribute 11", customLabel: "", enabled: false, fixed: false },
-            { position: 27, fieldId: "genericAttribute12", columnName: "Generic Attribute 12", defaultLabel: "Generic Attribute 12", customLabel: "", enabled: false, fixed: false },
-            { position: 28, fieldId: "genericAttribute13", columnName: "Generic Attribute 13", defaultLabel: "Generic Attribute 13", customLabel: "", enabled: false, fixed: false },
-            { position: 29, fieldId: "genericAttribute14", columnName: "Generic Attribute 14", defaultLabel: "Generic Attribute 14", customLabel: "", enabled: false, fixed: false },
-            { position: 30, fieldId: "genericAttribute15", columnName: "Generic Attribute 15", defaultLabel: "Generic Attribute 15", customLabel: "", enabled: false, fixed: false },
-            { position: 31, fieldId: "genericAttribute16", columnName: "Generic Attribute 16", defaultLabel: "Generic Attribute 16", customLabel: "", enabled: false, fixed: false },
-            { position: 32, fieldId: "genericNumber1", columnName: "Generic Number 1", defaultLabel: "Generic Number 1", customLabel: "", enabled: false, fixed: false },
-            { position: 33, fieldId: "genericNumber2", columnName: "Generic Number 2", defaultLabel: "Generic Number 2", customLabel: "", enabled: false, fixed: false },
-            { position: 34, fieldId: "genericNumber3", columnName: "Generic Number 3", defaultLabel: "Generic Number 3", customLabel: "", enabled: false, fixed: false },
-            { position: 35, fieldId: "genericNumber4", columnName: "Generic Number 4", defaultLabel: "Generic Number 4", customLabel: "", enabled: false, fixed: false },
-            { position: 36, fieldId: "genericNumber5", columnName: "Generic Number 5", defaultLabel: "Generic Number 5", customLabel: "", enabled: false, fixed: false },
-            { position: 37, fieldId: "genericNumber6", columnName: "Generic Number 6", defaultLabel: "Generic Number 6", customLabel: "", enabled: false, fixed: false },
-            { position: 38, fieldId: "genericDate1", columnName: "Generic Date 1", defaultLabel: "Generic Date 1", customLabel: "", enabled: false, fixed: false },
-            { position: 39, fieldId: "genericDate2", columnName: "Generic Date 2", defaultLabel: "Generic Date 2", customLabel: "", enabled: false, fixed: false },
-            { position: 40, fieldId: "genericDate3", columnName: "Generic Date 3", defaultLabel: "Generic Date 3", customLabel: "", enabled: false, fixed: false },
-            { position: 41, fieldId: "genericDate4", columnName: "Generic Date 4", defaultLabel: "Generic Date 4", customLabel: "", enabled: false, fixed: false },
-            { position: 42, fieldId: "genericDate5", columnName: "Generic Date 5", defaultLabel: "Generic Date 5", customLabel: "", enabled: false, fixed: false },
-            { position: 43, fieldId: "genericDate6", columnName: "Generic Date 6", defaultLabel: "Generic Date 6", customLabel: "", enabled: false, fixed: false },
-            { position: 44, fieldId: "genericBoolean1", columnName: "Generic Boolean 1", defaultLabel: "Generic Boolean 1", customLabel: "", enabled: false, fixed: false },
-            { position: 45, fieldId: "genericBoolean2", columnName: "Generic Boolean 2", defaultLabel: "Generic Boolean 2", customLabel: "", enabled: false, fixed: false },
-            { position: 46, fieldId: "genericBoolean3", columnName: "Generic Boolean 3", defaultLabel: "Generic Boolean 3", customLabel: "", enabled: false, fixed: false },
-            { position: 47, fieldId: "genericBoolean4", columnName: "Generic Boolean 4", defaultLabel: "Generic Boolean 4", customLabel: "", enabled: false, fixed: false },
-            { position: 48, fieldId: "genericBoolean5", columnName: "Generic Boolean 5", defaultLabel: "Generic Boolean 5", customLabel: "", enabled: false, fixed: false },
-            { position: 49, fieldId: "genericBoolean6", columnName: "Generic Boolean 6", defaultLabel: "Generic Boolean 6", customLabel: "", enabled: false, fixed: false }
+            { position: 5, fieldId: "businessUnit", columnName: "Business Unit", defaultLabel: "Business Unit", customLabel: "", enabled: true, fixed: true },
+            { position: 6, fieldId: "effectiveStartDate", columnName: "Effective Start Date", defaultLabel: "Effective Start Date", customLabel: "", enabled: true, fixed: true },
+            { position: 7, fieldId: "effectiveEndDate", columnName: "Effective End Date", defaultLabel: "Effective End Date", customLabel: "", enabled: true, fixed: true },
+            { position: 8, fieldId: "emailId", columnName: "Email ID", defaultLabel: "Email ID", customLabel: "", enabled: true, fixed: true },
+            { position: 9, fieldId: "country", columnName: "Country", defaultLabel: "Country", customLabel: "", enabled: true, fixed: true },
+            { position: 10, fieldId: "positionName", columnName: "Position Name", defaultLabel: "Position Name", customLabel: "", enabled: false, fixed: false },
+            { position: 11, fieldId: "salary", columnName: "Salary", defaultLabel: "Salary", customLabel: "", enabled: false, fixed: false },
+            { position: 12, fieldId: "unitTypeForSalary", columnName: "Unit Type for Salary", defaultLabel: "Unit Type for Salary", customLabel: "", enabled: false, fixed: false },
+            { position: 13, fieldId: "hireDate", columnName: "Hire Date", defaultLabel: "Hire Date", customLabel: "", enabled: false, fixed: false },
+            { position: 14, fieldId: "terminationDate", columnName: "Termination Date", defaultLabel: "Termination Date", customLabel: "", enabled: false, fixed: false },
+            { position: 15, fieldId: "userName", columnName: "User Name", defaultLabel: "User Name", customLabel: "", enabled: false, fixed: false },
+            { position: 16, fieldId: "userId", columnName: "User ID", defaultLabel: "User ID", customLabel: "", enabled: false, fixed: false },
+            { position: 17, fieldId: "genericAttribute1", columnName: "Generic Attribute 1", defaultLabel: "Generic Attribute 1", customLabel: "", enabled: false, fixed: false },
+            { position: 18, fieldId: "genericAttribute2", columnName: "Generic Attribute 2", defaultLabel: "Generic Attribute 2", customLabel: "", enabled: false, fixed: false },
+            { position: 19, fieldId: "genericAttribute3", columnName: "Generic Attribute 3", defaultLabel: "Generic Attribute 3", customLabel: "", enabled: false, fixed: false },
+            { position: 20, fieldId: "genericAttribute4", columnName: "Generic Attribute 4", defaultLabel: "Generic Attribute 4", customLabel: "", enabled: false, fixed: false },
+            { position: 21, fieldId: "genericAttribute5", columnName: "Generic Attribute 5", defaultLabel: "Generic Attribute 5", customLabel: "", enabled: false, fixed: false },
+            { position: 22, fieldId: "genericAttribute6", columnName: "Generic Attribute 6", defaultLabel: "Generic Attribute 6", customLabel: "", enabled: false, fixed: false },
+            { position: 23, fieldId: "genericAttribute7", columnName: "Generic Attribute 7", defaultLabel: "Generic Attribute 7", customLabel: "", enabled: false, fixed: false },
+            { position: 24, fieldId: "genericAttribute8", columnName: "Generic Attribute 8", defaultLabel: "Generic Attribute 8", customLabel: "", enabled: false, fixed: false },
+            { position: 25, fieldId: "genericAttribute9", columnName: "Generic Attribute 9", defaultLabel: "Generic Attribute 9", customLabel: "", enabled: false, fixed: false },
+            { position: 26, fieldId: "genericAttribute10", columnName: "Generic Attribute 10", defaultLabel: "Generic Attribute 10", customLabel: "", enabled: false, fixed: false },
+            { position: 27, fieldId: "genericAttribute11", columnName: "Generic Attribute 11", defaultLabel: "Generic Attribute 11", customLabel: "", enabled: false, fixed: false },
+            { position: 28, fieldId: "genericAttribute12", columnName: "Generic Attribute 12", defaultLabel: "Generic Attribute 12", customLabel: "", enabled: false, fixed: false },
+            { position: 29, fieldId: "genericAttribute13", columnName: "Generic Attribute 13", defaultLabel: "Generic Attribute 13", customLabel: "", enabled: false, fixed: false },
+            { position: 30, fieldId: "genericAttribute14", columnName: "Generic Attribute 14", defaultLabel: "Generic Attribute 14", customLabel: "", enabled: false, fixed: false },
+            { position: 31, fieldId: "genericAttribute15", columnName: "Generic Attribute 15", defaultLabel: "Generic Attribute 15", customLabel: "", enabled: false, fixed: false },
+            { position: 32, fieldId: "genericAttribute16", columnName: "Generic Attribute 16", defaultLabel: "Generic Attribute 16", customLabel: "", enabled: false, fixed: false },
+            { position: 33, fieldId: "genericNumber1", columnName: "Generic Number 1", defaultLabel: "Generic Number 1", customLabel: "", enabled: false, fixed: false },
+            { position: 34, fieldId: "genericNumber2", columnName: "Generic Number 2", defaultLabel: "Generic Number 2", customLabel: "", enabled: false, fixed: false },
+            { position: 35, fieldId: "genericNumber3", columnName: "Generic Number 3", defaultLabel: "Generic Number 3", customLabel: "", enabled: false, fixed: false },
+            { position: 36, fieldId: "genericNumber4", columnName: "Generic Number 4", defaultLabel: "Generic Number 4", customLabel: "", enabled: false, fixed: false },
+            { position: 37, fieldId: "genericNumber5", columnName: "Generic Number 5", defaultLabel: "Generic Number 5", customLabel: "", enabled: false, fixed: false },
+            { position: 38, fieldId: "genericNumber6", columnName: "Generic Number 6", defaultLabel: "Generic Number 6", customLabel: "", enabled: false, fixed: false },
+            { position: 39, fieldId: "genericDate1", columnName: "Generic Date 1", defaultLabel: "Generic Date 1", customLabel: "", enabled: false, fixed: false },
+            { position: 40, fieldId: "genericDate2", columnName: "Generic Date 2", defaultLabel: "Generic Date 2", customLabel: "", enabled: false, fixed: false },
+            { position: 41, fieldId: "genericDate3", columnName: "Generic Date 3", defaultLabel: "Generic Date 3", customLabel: "", enabled: false, fixed: false },
+            { position: 42, fieldId: "genericDate4", columnName: "Generic Date 4", defaultLabel: "Generic Date 4", customLabel: "", enabled: false, fixed: false },
+            { position: 43, fieldId: "genericDate5", columnName: "Generic Date 5", defaultLabel: "Generic Date 5", customLabel: "", enabled: false, fixed: false },
+            { position: 44, fieldId: "genericDate6", columnName: "Generic Date 6", defaultLabel: "Generic Date 6", customLabel: "", enabled: false, fixed: false },
+            { position: 45, fieldId: "genericBoolean1", columnName: "Generic Boolean 1", defaultLabel: "Generic Boolean 1", customLabel: "", enabled: false, fixed: false },
+            { position: 46, fieldId: "genericBoolean2", columnName: "Generic Boolean 2", defaultLabel: "Generic Boolean 2", customLabel: "", enabled: false, fixed: false },
+            { position: 47, fieldId: "genericBoolean3", columnName: "Generic Boolean 3", defaultLabel: "Generic Boolean 3", customLabel: "", enabled: false, fixed: false },
+            { position: 48, fieldId: "genericBoolean4", columnName: "Generic Boolean 4", defaultLabel: "Generic Boolean 4", customLabel: "", enabled: false, fixed: false },
+            { position: 49, fieldId: "genericBoolean5", columnName: "Generic Boolean 5", defaultLabel: "Generic Boolean 5", customLabel: "", enabled: false, fixed: false },
+            { position: 50, fieldId: "genericBoolean6", columnName: "Generic Boolean 6", defaultLabel: "Generic Boolean 6", customLabel: "", enabled: false, fixed: false }
         ],
 
         /**
@@ -146,6 +149,7 @@ sap.ui.define([
             this.getView().setModel(new JSONModel([]), "periodsData");
             this.getView().setModel(new JSONModel([]), "productsData");
             this.getView().setModel(new JSONModel([]), "creditTypesData");
+            this.getView().setModel(new JSONModel([]), "businessUnitsData");
             this.getView().setModel(new JSONModel([]), "analyticsRawData");
             this.getView().setModel(new JSONModel([]), "analyticsChartData");
             this.getView().setModel(new JSONModel({
@@ -159,6 +163,7 @@ sap.ui.define([
             this._loadPeriods();
             this._loadProducts();
             this._loadCreditTypes();
+            this._loadBusinessUnits();
             this._loadPlanNames();
             this._loadIncentiveTypes();
             this._loadEligibleTiers();
@@ -282,6 +287,7 @@ sap.ui.define([
             var oBundle = this.getView().getModel("i18n").getResourceBundle();
             var aActive = this._getActiveFieldCustomizations();
             var aActivePartnerTypes = this.getView().getModel("activePartnerTypes").getData();
+            var aBusinessUnits = this.getView().getModel("businessUnitsData").getData();
 
             var aFormContent = [];
             this._registrationControls = {};
@@ -302,6 +308,13 @@ sap.ui.define([
                     if (oField.fieldId === "partnerType") {
                         aActivePartnerTypes.forEach(function (oType) {
                             oControl.addItem(new Item({ key: oType.partnerType, text: oType.partnerType }));
+                        });
+                    }
+                } else if (sType === "multicombobox") {
+                    oControl = new MultiComboBox({ width: "100%" });
+                    if (oField.fieldId === "businessUnit") {
+                        aBusinessUnits.forEach(function (oBU) {
+                            oControl.addItem(new Item({ key: oBU.NAME, text: oBU.NAME }));
                         });
                     }
                 } else if (sType === "date") {
@@ -374,6 +387,8 @@ sap.ui.define([
                 var sValue;
                 if (sType === "combobox") {
                     sValue = oControl.getSelectedKey();
+                } else if (sType === "multicombobox") {
+                    sValue = (oControl.getSelectedKeys() || []).join(", ");
                 } else if (sType === "boolean") {
                     sValue = oControl.getSelected();
                 } else {
@@ -671,6 +686,45 @@ sap.ui.define([
                 })
                 .catch(function (oError) {
                     MessageBox.error("Error fetching credit types: " + oError.message);
+                });
+        },
+
+        /**
+         * Fetch business units from TCMP destination for the Partner Onboarding form
+         */
+        _loadBusinessUnits() {
+            var sBaseUrl = this.getOwnerComponent().getManifestObject().resolveUri(
+                this.getOwnerComponent().getManifestEntry("sap.app").dataSources.tcmp.uri
+            );
+            var sUrl = sBaseUrl + "/CS_V_BUSINESS_UNITS/CS_V_BUSINESS_UNITS";
+            var that = this;
+
+            fetch(sUrl)
+                .then(function (oResponse) {
+                    if (!oResponse.ok) {
+                        throw new Error("Failed to fetch business units");
+                    }
+                    return oResponse.json();
+                })
+                .then(function (oData) {
+                    var aRecords = oData.value || [];
+                    var aUnique = [];
+                    var oSeen = {};
+                    aRecords.forEach(function (oRecord) {
+                        var sKey = oRecord.NAME;
+                        if (sKey && !oSeen[sKey]) {
+                            oSeen[sKey] = true;
+                            aUnique.push({ NAME: sKey });
+                        }
+                    });
+                    aUnique.sort(function (a, b) { return a.NAME.localeCompare(b.NAME); });
+
+                    var oModel = that.getView().getModel("businessUnitsData");
+                    oModel.setSizeLimit(aUnique.length);
+                    oModel.setData(aUnique);
+                })
+                .catch(function (oError) {
+                    MessageBox.error("Error fetching business units: " + oError.message);
                 });
         },
 
